@@ -1,0 +1,64 @@
+import { Schema, model } from 'mongoose'
+
+const TourSchema = new Schema({
+    name: {
+        type: String,
+        required: [true, 'A Tour must have a name.'],
+    },
+    rating: {
+        type: Number,
+        default: 4.5,
+    },
+    averageRating: {
+        type: Number,
+        default: 0,
+    },
+    price: {
+        type: Number,
+        required: [true, 'A Tour must have a price.'],
+    },
+    ratingsQuantity: {
+        type: Number,
+        default: 0,
+    },
+    difficulty: {
+        type: String,
+        required: [true, 'A Tour must have a difficulty.'],
+    },
+    maxGroupSize: {
+        type: Number,
+        required: [true, 'A Tour must have a group size.'],
+    },
+    duration: {
+        type: Number,
+        required: [true, 'A Tour must have a duration.'],
+    },
+    images: {
+        type: [String],
+        required: [true, 'A Tour must contain at least 3 images.'],
+    },
+    summary: {
+        type: String,
+        required: [true, 'A Tour must have a summary.'],
+    },
+    description: {
+        type: String,
+        required: [true, 'A Tour must have a description.'],
+    },
+    coverImage: {
+        type: String,
+        required: [true, 'A Tour must have a cover image.'],
+    },
+    createdAt: {
+        type: String,
+        required: [true, 'A Tour must have a craete date.'],
+    },
+    startDates: {
+        type: [String],
+        required: [true, 'A Tour must have a start date.'],
+    },
+})
+
+const TourModel = model('Tour schema', TourSchema)
+
+export default TourModel
