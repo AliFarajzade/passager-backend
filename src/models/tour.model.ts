@@ -5,10 +5,6 @@ const TourSchema = new Schema({
         type: String,
         required: [true, 'A Tour must have a name.'],
     },
-    rating: {
-        type: Number,
-        default: 4.5,
-    },
     averageRating: {
         type: Number,
         default: 0,
@@ -49,10 +45,7 @@ const TourSchema = new Schema({
         type: String,
         required: [true, 'A Tour must have a cover image.'],
     },
-    createdAt: {
-        type: String,
-        required: [true, 'A Tour must have a craete date.'],
-    },
+
     startDates: {
         type: [String],
         required: [true, 'A Tour must have a start date.'],
