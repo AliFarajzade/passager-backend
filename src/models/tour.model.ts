@@ -52,6 +52,6 @@ const TourSchema = new Schema({
     },
 })
 
-const TourModel = model('Tour schema', TourSchema)
+const TourModel = model('tours', TourSchema)
 
 export default TourModel
