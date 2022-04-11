@@ -1,4 +1,5 @@
 import { RequestHandler, Request, Response } from 'express'
+import TourModel from '../models/tour.model'
 
 // Get all tours
 export const getAllTours: RequestHandler = async (
@@ -6,22 +7,20 @@ export const getAllTours: RequestHandler = async (
     res: Response
 ) => {
     try {
-        // Getting all tours from db
+        const allTours = await TourModel.find()
 
+        // Getting all tours from db
         res.status(200).json({
             status: 'success',
-            data: {},
-        })
-
-        // No content found
-        res.status(204).json({
-            status: 'success',
-            data: {},
+            results: allTours.length,
+            data: {
+                tours: allTours,
+            },
         })
     } catch (error) {
         res.status(404).json({
             status: 'fail',
-            message: 'No tours found.',
+            message: error,
         })
     }
 }
@@ -35,21 +34,19 @@ export const getTourByID: RequestHandler = async (
         // Get tours ID
         const { id } = req.params
 
+        const tourToFind = await TourModel.findById(id)
+
         // Getting all tours from db
         res.status(200).json({
             status: 'success',
-            data: {},
-        })
-
-        // No content found
-        res.status(204).json({
-            status: 'success',
-            data: {},
+            data: {
+                tour: tourToFind,
+            },
         })
     } catch (error) {
         res.status(404).json({
             status: 'fail',
-            message: 'No tours found.',
+            message: error,
         })
     }
 }
@@ -60,12 +57,23 @@ export const patchTourByID: RequestHandler = async (
     res: Response
 ) => {
     try {
-        // Get tours ID
         const { id } = req.params
+
+        const updatedTour = await TourModel.findByIdAndUpdate(id, req.body, {
+            new: true,
+            runValidators: true,
+        })
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                tour: updatedTour,
+            },
+        })
     } catch (error) {
         res.status(404).json({
             status: 'fail',
-            message: 'No tours found.',
+            message: error,
         })
     }
 }
@@ -78,12 +86,18 @@ export const deleteTourByID: RequestHandler = async (
     res: Response
 ) => {
     try {
-        // Get tours ID
         const { id } = req.params
+
+        await TourModel.findByIdAndRemove(id)
+
+        res.status(202).json({
+            status: 'deleted',
+            data: {},
+        })
     } catch (error) {
         res.status(404).json({
             status: 'fail',
-            message: 'No tours found.',
+            message: error,
         })
     }
 }
@@ -94,11 +108,18 @@ export const createNewTour: RequestHandler = async (
     res: Response
 ) => {
     try {
-        // Get tours ID
+        const createdTour = await TourModel.create(req.body)
+
+        res.status(201).json({
+            status: 'success',
+            data: {
+                tour: createdTour,
+            },
+        })
     } catch (error) {
         res.status(404).json({
             status: 'fail',
-            message: 'No tours found.',
+            message: error,
         })
     }
 }
