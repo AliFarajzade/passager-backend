@@ -8,9 +8,18 @@ export const getAllTours: RequestHandler = async (
 ) => {
     try {
         // Filtering
-        const queryObj = { ...req.query }
+        let queryObj = { ...req.query }
         const filterFields = ['sort', 'limit', 'page', 'fields']
         filterFields.forEach(field => delete queryObj[field])
+
+        // Complex Filtering
+        const queryStr = JSON.stringify(queryObj)
+        queryObj = JSON.parse(
+            queryStr.replace(/\b(lt|lte|gt|gte)\b/g, match => `$${match}`)
+        )
+
+        console.log(queryObj)
+        console.log(queryStr)
 
         const tours = await TourModel.find(queryObj)
 
