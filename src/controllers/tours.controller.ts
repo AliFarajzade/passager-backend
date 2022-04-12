@@ -18,9 +18,7 @@ export const getAllTours: RequestHandler = async (
             queryStr.replace(/\b(lt|lte|gt|gte)\b/g, match => `$${match}`)
         )
 
-        let query = TourModel.find(queryObj)
-            .sort('price rating')
-            .select('price')
+        let query = TourModel.find(queryObj).sort('price rating')
 
         // Sorting
         let { sort: sortStr } = req.query
@@ -29,6 +27,17 @@ export const getAllTours: RequestHandler = async (
             // @ts-ignore
             sortStr = sortStr.replace(/(,)/g, ' ')
             query = query.sort(sortStr)
+        }
+
+        // Fields
+        let { fields: fieldsStr } = req.query
+        if (fieldsStr) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            fieldsStr = fieldsStr.replace(/(,)/g, ' ')
+            query = query.select(fieldsStr)
+        } else {
+            query = query.select('-__v')
         }
 
         const tours = await query
