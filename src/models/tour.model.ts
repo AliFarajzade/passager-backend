@@ -47,8 +47,12 @@ const TourSchema = new Schema({
     },
 
     startDates: {
-        type: [String],
+        type: [Date],
         required: [true, 'A Tour must have a start date.'],
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now(),
     },
 })
 

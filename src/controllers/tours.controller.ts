@@ -18,10 +18,20 @@ export const getAllTours: RequestHandler = async (
             queryStr.replace(/\b(lt|lte|gt|gte)\b/g, match => `$${match}`)
         )
 
-        console.log(queryObj)
-        console.log(queryStr)
+        let query = TourModel.find(queryObj)
+            .sort('price rating')
+            .select('price')
 
-        const tours = await TourModel.find(queryObj)
+        // Sorting
+        let { sort: sortStr } = req.query
+        if (sortStr) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            sortStr = sortStr.replace(/(,)/g, ' ')
+            query = query.sort(sortStr)
+        }
+
+        const tours = await query
 
         // Getting all tours from db
         res.status(200).json({
