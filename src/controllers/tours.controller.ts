@@ -3,18 +3,23 @@ import TourModel from '../models/tour.model'
 
 // Get all tours
 export const getAllTours: RequestHandler = async (
-    _: Request,
+    req: Request,
     res: Response
 ) => {
     try {
-        const allTours = await TourModel.find()
+        // Filtering
+        const queryObj = { ...req.query }
+        const filterFields = ['sort', 'limit', 'page', 'fields']
+        filterFields.forEach(field => delete queryObj[field])
+
+        const tours = await TourModel.find(queryObj)
 
         // Getting all tours from db
         res.status(200).json({
             status: 'success',
-            results: allTours.length,
+            results: tours.length,
             data: {
-                tours: allTours,
+                tours,
             },
         })
     } catch (error) {
