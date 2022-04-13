@@ -40,6 +40,14 @@ export const getAllTours: RequestHandler = async (
             query = query.select('-__v')
         }
 
+        // Pagination
+        const { page, limit } = req.query
+
+        const pageNumber = page ? +page : 1
+        const limitValue = limit ? +limit : 5
+
+        query = query.skip((pageNumber - 1) * limitValue).limit(limitValue)
+
         const tours = await query
 
         // Getting all tours from db
