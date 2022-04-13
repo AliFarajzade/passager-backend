@@ -11,6 +11,11 @@ router
 
 // prettier-ignore
 router
+    .route('/top-5-cheap')
+    .get(toursController.aliesTopTours, toursController.getAllTours)
+
+// prettier-ignore
+router
     .route('/:id')
     .get(toursController.getTourByID)
     .patch(toursController.patchTourByID)

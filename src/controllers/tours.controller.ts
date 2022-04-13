@@ -1,4 +1,4 @@
-import { RequestHandler, Request, Response } from 'express'
+import type { RequestHandler, Request, Response, NextFunction } from 'express'
 import TourModel from '../models/tour.model'
 
 // Get all tours
@@ -18,7 +18,7 @@ export const getAllTours: RequestHandler = async (
             queryStr.replace(/\b(lt|lte|gt|gte)\b/g, match => `$${match}`)
         )
 
-        let query = TourModel.find(queryObj).sort('price rating')
+        let query = TourModel.find(queryObj)
 
         // Sorting
         let { sort: sortStr } = req.query
@@ -63,6 +63,23 @@ export const getAllTours: RequestHandler = async (
             status: 'fail',
             message: error,
         })
+    }
+}
+
+// Add query for top 5 tours
+export const aliesTopTours = async (
+    req: Request,
+    _: Response,
+    next: NextFunction
+) => {
+    try {
+        // ?limit=5&sort=-averageRating,price&fields=name,averageRating,price,difficulty
+        req.query.limit = '5'
+        req.query.sort = '-averageRating,price'
+        req.query.fields = 'name,averageRating,price,difficulty'
+        next()
+    } catch (error) {
+        console.log(error)
     }
 }
 
