@@ -1,4 +1,5 @@
 import type { RequestHandler, Request, Response, NextFunction } from 'express'
+import APIFeatures from '../utils/api.handler'
 import TourModel from '../models/tour.model'
 
 // Get all tours
@@ -7,48 +8,12 @@ export const getAllTours: RequestHandler = async (
     res: Response
 ) => {
     try {
-        // Filtering
-        let queryObj = { ...req.query }
-        const filterFields = ['sort', 'limit', 'page', 'fields']
-        filterFields.forEach(field => delete queryObj[field])
-
-        // Complex Filtering
-        const queryStr = JSON.stringify(queryObj)
-        queryObj = JSON.parse(
-            queryStr.replace(/\b(lt|lte|gt|gte)\b/g, match => `$${match}`)
-        )
-
-        let query = TourModel.find(queryObj)
-
-        // Sorting
-        let { sort: sortStr } = req.query
-        if (sortStr) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            sortStr = sortStr.replace(/(,)/g, ' ')
-            query = query.sort(sortStr)
-        }
-
-        // Fields
-        let { fields: fieldsStr } = req.query
-        if (fieldsStr) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            fieldsStr = fieldsStr.replace(/(,)/g, ' ')
-            query = query.select(fieldsStr)
-        } else {
-            query = query.select('-__v')
-        }
-
-        // Pagination
-        const { page, limit } = req.query
-
-        const pageNumber = page ? +page : 1
-        const limitValue = limit ? +limit : 5
-
-        query = query.skip((pageNumber - 1) * limitValue).limit(limitValue)
-
-        const tours = await query
+        // Craete a query request
+        const features = new APIFeatures(TourModel.find(), req.query)
+        features.filter().sort().fields().pagination()
+        // features.sort()
+        // features.fileds()
+        const tours = await features.query
 
         // Getting all tours from db
         res.status(200).json({
