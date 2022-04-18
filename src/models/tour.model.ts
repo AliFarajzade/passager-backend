@@ -46,10 +46,7 @@ const TourSchema = new Schema({
         required: [true, 'A Tour must have a cover image.'],
     },
 
-    startDates: {
-        type: [Date],
-        required: [true, 'A Tour must have a start date.'],
-    },
+    startDates: [Date],
     createdAt: {
         type: Date,
         default: Date.now(),
