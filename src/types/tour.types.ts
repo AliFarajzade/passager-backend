@@ -1,4 +1,6 @@
 export type TTour = {
+    slug: string
+    secretTour: boolean
     rating: number
     averageRating: number
     ratingsQuantity: number

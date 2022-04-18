@@ -10,6 +10,11 @@ router
     .post(toursController.createNewTour)
 
 // prettier-ignore
+router 
+    .route('/get-stats')
+    .get(toursController.getTourStatsPipeline)
+// prettier-ignore
+
 router
     .route('/top-5-cheap')
     .get(toursController.aliesTopTours, toursController.getAllTours)

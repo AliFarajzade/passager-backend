@@ -1,5 +1,6 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, Query, Aggregate } from 'mongoose'
 import { TTour } from '../types/tour.types'
+import slugify from 'slugify'
 
 const TourSchema = new Schema(
     {
@@ -7,6 +8,7 @@ const TourSchema = new Schema(
             type: String,
             required: [true, 'A Tour must have a name.'],
         },
+        slug: String,
         averageRating: {
             type: Number,
             default: 0,
@@ -47,7 +49,10 @@ const TourSchema = new Schema(
             type: String,
             required: [true, 'A Tour must have a cover image.'],
         },
-
+        secretTour: {
+            type: Boolean,
+            defaultValue: false,
+        },
         startDates: [Date],
         createdAt: {
             type: Date,
@@ -63,6 +68,51 @@ const TourSchema = new Schema(
 // Virtual properties
 TourSchema.virtual('priceToPound').get(function (this: TTour) {
     return this.price * 0.77
+})
+
+// Document middlewares
+TourSchema.pre('save', function (this: TTour, next) {
+    console.log('Adding slug...')
+    this.slug = slugify(this.name, { lower: true })
+    next()
+})
+
+TourSchema.post('save', function (this: TTour, doc, next) {
+    console.log('Document Saved.')
+    console.log(doc)
+    next()
+})
+
+// Query middlewares
+TourSchema.pre(
+    /^find/,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function (this: Query<any[], any, Record<string, any>, any>, next) {
+        this.find({ secretTour: { $ne: true } })
+        next()
+    }
+)
+
+TourSchema.post(
+    /^find/,
+    function (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this: Query<any[], any, Record<string, any>, any>,
+        docs: TTour[],
+        next
+    ) {
+        this.find({ secretTour: { $ne: true } })
+        console.log(docs)
+        next()
+    }
+)
+
+// Aggregate middlewares
+TourSchema.pre('aggregate', function (this: Aggregate<TTour>, next) {
+    this.pipeline().push({
+        $sort: { numTours: -1 },
+    })
+    next()
 })
 
 const TourModel = model('tours', TourSchema)

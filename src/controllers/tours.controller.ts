@@ -11,8 +11,6 @@ export const getAllTours: RequestHandler = async (
         // Craete a query request
         const features = new APIFeatures(TourModel.find(), req.query)
         features.filter().sort().fields().pagination()
-        // features.sort()
-        // features.fileds()
         const tours = await features.query
 
         // Getting all tours from db
@@ -137,6 +135,37 @@ export const createNewTour: RequestHandler = async (
             status: 'success',
             data: {
                 tour: createdTour,
+            },
+        })
+    } catch (error) {
+        res.status(404).json({
+            status: 'fail',
+            message: error,
+        })
+    }
+}
+
+export const getTourStatsPipeline: RequestHandler = async (
+    _: Request,
+    res: Response
+) => {
+    try {
+        const stats = await TourModel.aggregate([
+            {
+                $group: {
+                    _id: '$difficulty',
+                    numTours: { $sum: 1 },
+                    minPrice: { $min: '$price' },
+                    maxPrice: { $max: '$price' },
+                    avgPrice: { $avg: '$price' },
+                },
+            },
+        ])
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                stats,
             },
         })
     } catch (error) {
