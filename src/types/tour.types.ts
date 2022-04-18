@@ -1,6 +1,6 @@
 export type TTour = {
     rating: number
-    ratingsAverage: number
+    averageRating: number
     ratingsQuantity: number
     maxGroupSize: number
     duration: number
@@ -11,6 +11,6 @@ export type TTour = {
     summary: string
     description: string
     coverImage: string
-    createdAt: string
-    startDates: string[]
+    createdAt: Date
+    startDates: Date[]
 }
