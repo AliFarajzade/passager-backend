@@ -100,8 +100,6 @@ export const patchTourByID: RequestHandler = async (
 }
 
 // Delete tour by ID
-
-// Update (patch) tour by ID
 export const deleteTourByID: RequestHandler = async (
     req: Request,
     res: Response

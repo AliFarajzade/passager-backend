@@ -7,15 +7,37 @@ const TourSchema = new Schema(
         name: {
             type: String,
             required: [true, 'A Tour must have a name.'],
+            unique: true,
+            trim: true,
+            minlength: [
+                7,
+                'A Tour name must have more or equal than 7 characters.',
+            ],
+            maxlength: [
+                40,
+                'A Tour name must have less or equal than 40 characters.',
+            ],
         },
         slug: String,
         averageRating: {
             type: Number,
             default: 0,
+            min: [0.1, 'A Tour rating must be more or equal than 0.1'],
+            max: [5.0, 'A Tour rating must be less or equal than 5.0'],
         },
         price: {
             type: Number,
             required: [true, 'A Tour must have a price.'],
+        },
+        discounetedPrice: {
+            type: Number,
+            validate: {
+                validator: function (this: TTour, value: number) {
+                    return this.price > value
+                },
+                message:
+                    'Discounted price ({VALUE}) must be lower than regular price.',
+            },
         },
         ratingsQuantity: {
             type: Number,
@@ -24,6 +46,11 @@ const TourSchema = new Schema(
         difficulty: {
             type: String,
             required: [true, 'A Tour must have a difficulty.'],
+            enum: {
+                values: ['easy', 'medium', 'difficult'],
+                message:
+                    'Difficulty must be either "easy", "medium" or "difficult".',
+            },
         },
         maxGroupSize: {
             type: Number,
@@ -40,10 +67,12 @@ const TourSchema = new Schema(
         summary: {
             type: String,
             required: [true, 'A Tour must have a summary.'],
+            trim: true,
         },
         description: {
             type: String,
             required: [true, 'A Tour must have a description.'],
+            trim: true,
         },
         coverImage: {
             type: String,
@@ -70,7 +99,7 @@ TourSchema.virtual('priceToPound').get(function (this: TTour) {
     return this.price * 0.77
 })
 
-// Document middlewares
+// Document middlewares: Runs bewfore .save() and .create(); NoT WHEN UPDATE!
 TourSchema.pre('save', function (this: TTour, next) {
     console.log('Adding slug...')
     this.slug = slugify(this.name, { lower: true })
@@ -102,7 +131,6 @@ TourSchema.post(
         next
     ) {
         this.find({ secretTour: { $ne: true } })
-        console.log(docs)
         next()
     }
 )
