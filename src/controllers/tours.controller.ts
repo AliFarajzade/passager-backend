@@ -1,5 +1,5 @@
 import type { RequestHandler, Request, Response, NextFunction } from 'express'
-import APIFeatures from '../utils/api.handler'
+import APIFeatures from '../utils/api-handler.class'
 import TourModel from '../models/tour.model'
 
 // Get all tours
