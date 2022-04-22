@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express'
 import morgan from 'morgan'
-import * as errorController from './controllers/error.controller'
+import { errorMiddleware } from './controllers/error.controller'
 import toursRouter from './routes/tours.router'
 import usersRouter from './routes/users.router'
 import AppError from './utils/app-error.class'
@@ -21,6 +21,6 @@ app.all('*', (req: Request, _: Response, next: NextFunction) =>
 )
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use(errorController.errorMiddleware)
+app.use(errorMiddleware)
 
 export default app

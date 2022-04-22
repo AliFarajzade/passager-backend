@@ -1,13 +1,12 @@
 import type { RequestHandler, Request, Response, NextFunction } from 'express'
 import APIFeatures from '../utils/api-handler.class'
 import TourModel from '../models/tour.model'
+import { catchAsync } from '../controllers/error.controller'
 
 // Get all tours
-export const getAllTours: RequestHandler = async (
-    req: Request,
-    res: Response
-) => {
-    try {
+export const getAllTours: RequestHandler = catchAsync(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (req: Request, res: Response, _: NextFunction) => {
         // Craete a query request
         const features = new APIFeatures(TourModel.find(), req.query)
         features.filter().sort().fields().pagination()
@@ -21,13 +20,8 @@ export const getAllTours: RequestHandler = async (
                 tours,
             },
         })
-    } catch (error) {
-        res.status(404).json({
-            status: 'fail',
-            message: error,
-        })
     }
-}
+)
 
 // Add query for top 5 tours
 export const aliesTopTours = async (
@@ -47,11 +41,9 @@ export const aliesTopTours = async (
 }
 
 // Get tour by ID
-export const getTourByID: RequestHandler = async (
-    req: Request,
-    res: Response
-) => {
-    try {
+export const getTourByID: RequestHandler = catchAsync(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (req: Request, res: Response, _: NextFunction) => {
         // Get tours ID
         const { id } = req.params
 
@@ -64,20 +56,13 @@ export const getTourByID: RequestHandler = async (
                 tour: tourToFind,
             },
         })
-    } catch (error) {
-        res.status(404).json({
-            status: 'fail',
-            message: error,
-        })
     }
-}
+)
 
 // Update (patch) tour by ID
-export const patchTourByID: RequestHandler = async (
-    req: Request,
-    res: Response
-) => {
-    try {
+export const patchTourByID: RequestHandler = catchAsync(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (req: Request, res: Response, _: NextFunction) => {
         const { id } = req.params
 
         const updatedTour = await TourModel.findByIdAndUpdate(id, req.body, {
@@ -91,20 +76,13 @@ export const patchTourByID: RequestHandler = async (
                 tour: updatedTour,
             },
         })
-    } catch (error) {
-        res.status(404).json({
-            status: 'fail',
-            message: error,
-        })
     }
-}
+)
 
 // Delete tour by ID
-export const deleteTourByID: RequestHandler = async (
-    req: Request,
-    res: Response
-) => {
-    try {
+export const deleteTourByID: RequestHandler = catchAsync(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (req: Request, res: Response, _: NextFunction) => {
         const { id } = req.params
 
         await TourModel.findByIdAndRemove(id)
@@ -113,20 +91,12 @@ export const deleteTourByID: RequestHandler = async (
             status: 'deleted',
             data: {},
         })
-    } catch (error) {
-        res.status(404).json({
-            status: 'fail',
-            message: error,
-        })
     }
-}
-
+)
 // Create new tour
-export const createNewTour: RequestHandler = async (
-    req: Request,
-    res: Response
-) => {
-    try {
+export const createNewTour: RequestHandler = catchAsync(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (req: Request, res: Response, _: NextFunction) => {
         const createdTour = await TourModel.create(req.body)
 
         res.status(201).json({
@@ -135,19 +105,12 @@ export const createNewTour: RequestHandler = async (
                 tour: createdTour,
             },
         })
-    } catch (error) {
-        res.status(404).json({
-            status: 'fail',
-            message: error,
-        })
     }
-}
+)
 
-export const getTourStatsPipeline: RequestHandler = async (
-    _: Request,
-    res: Response
-) => {
-    try {
+export const getTourStatsPipeline: RequestHandler = catchAsync(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (_: Request, res: Response, __: NextFunction) => {
         const stats = await TourModel.aggregate([
             {
                 $group: {
@@ -166,10 +129,5 @@ export const getTourStatsPipeline: RequestHandler = async (
                 stats,
             },
         })
-    } catch (error) {
-        res.status(404).json({
-            status: 'fail',
-            message: error,
-        })
     }
-}
+)
