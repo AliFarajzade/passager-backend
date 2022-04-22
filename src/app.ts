@@ -1,8 +1,9 @@
 import express, { NextFunction, Request, Response } from 'express'
 import morgan from 'morgan'
+import * as errorController from './controllers/error.controller'
 import toursRouter from './routes/tours.router'
 import usersRouter from './routes/users.router'
-import { TExpressError } from './types/error.types'
+import AppError from './utils/app-error.class'
 
 const app = express()
 
@@ -15,24 +16,11 @@ app.use('/api/v1/tours', toursRouter)
 app.use('/api/v1/users', usersRouter)
 
 // Unknown route error
-app.all('*', (req: Request, _: Response, next: NextFunction) => {
-    const err = new Error(
-        `No routes specified at ${req.originalUrl}`
-    ) as TExpressError
-    err.status = 'fail'
-    err.statusCode = 404
-    next(err)
-})
+app.all('*', (req: Request, _: Response, next: NextFunction) =>
+    next(new AppError(`No routes specified at ${req.originalUrl}`, 404))
+)
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: TExpressError, _: Request, res: Response, __: NextFunction) => {
-    err.statusCode = err.statusCode || 500
-    err.status = err.status || 'error'
-
-    res.status(err.statusCode).json({
-        status: err.status,
-        message: err.message,
-    })
-})
+app.use(errorController.errorMiddleware)
 
 export default app

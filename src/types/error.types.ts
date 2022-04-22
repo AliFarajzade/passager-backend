@@ -1,4 +1,5 @@
-export type TExpressError = Error & {
-    statusCode?: number
-    status?: string
+export interface IExpressError extends Error {
+    statusCode: number
+    status: string
+    isOperational: boolean
 }

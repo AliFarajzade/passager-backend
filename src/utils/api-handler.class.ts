@@ -5,7 +5,7 @@ import { Query } from 'mongoose'
 export default class APIFeatures {
     constructor(
         public query: Query<any[], any, Record<string, any>, any>,
-        public queryString: Record<
+        private queryString: Record<
             string,
             string | ParsedQs | string[] | ParsedQs[] | undefined
         >
