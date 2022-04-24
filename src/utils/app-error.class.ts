@@ -2,7 +2,7 @@ import { IExpressError } from '../types/error.types'
 
 class AppError extends Error implements IExpressError {
     public status: string
-    public isOperational = true
+    public isOperational: boolean
     public statusCode: number
     constructor(message: string, statusCode: number) {
         super(message)
