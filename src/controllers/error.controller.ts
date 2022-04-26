@@ -1,12 +1,14 @@
 import { NextFunction, Request, Response } from 'express'
 import type { CastError } from 'mongoose'
 import { TControllerCRUDFunction } from '../types/controllers.types'
-import { IExpressError } from '../types/error.types'
+import { IExpressError, IMongodbError } from '../types/error.types'
 import AppError from '../utils/app-error.class'
 
-const handleCastError = (err: CastError) => {
-    return new AppError(`Invalid ${err.path}: ${err.value}`, 400)
-}
+const handleCastError = (err: CastError) =>
+    new AppError(`Invalid ${err.path}: ${err.value}`, 400)
+
+const handleDuplicateKeyError = (err: IMongodbError) =>
+    new AppError(`Duplicate field error ${JSON.stringify(err.keyValue)}`, 400)
 
 const handleErrorDev = (res: Response, err: IExpressError) => {
     res.status(err.statusCode).json({
@@ -47,6 +49,13 @@ export const errorMiddleware = (
     } else if (process.env.NODE_ENV === 'production') {
         if (err.name === 'CastError') {
             const newError = handleCastError(err as unknown as CastError)
+            return handleErrorProd(res, newError)
+        }
+
+        if (err.code === 11000) {
+            const newError = handleDuplicateKeyError(
+                err as unknown as IMongodbError
+            )
             return handleErrorProd(res, newError)
         }
 
