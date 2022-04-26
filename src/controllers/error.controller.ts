@@ -1,6 +1,12 @@
 import { NextFunction, Request, Response } from 'express'
+import type { CastError } from 'mongoose'
 import { TControllerCRUDFunction } from '../types/controllers.types'
 import { IExpressError } from '../types/error.types'
+import AppError from '../utils/app-error.class'
+
+const handleCastError = (err: CastError) => {
+    return new AppError(`Invalid ${err.path}: ${err.value}`, 400)
+}
 
 const handleErrorDev = (res: Response, err: IExpressError) => {
     res.status(err.statusCode).json({
@@ -39,6 +45,11 @@ export const errorMiddleware = (
     if (process.env.NODE_ENV === 'development') {
         handleErrorDev(res, err)
     } else if (process.env.NODE_ENV === 'production') {
+        if (err.name === 'CastError') {
+            const newError = handleCastError(err as unknown as CastError)
+            return handleErrorProd(res, newError)
+        }
+
         handleErrorProd(res, err)
     }
 }

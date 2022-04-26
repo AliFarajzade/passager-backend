@@ -1,6 +1,6 @@
-import { Schema, model, Query, Aggregate } from 'mongoose'
-import { TTour } from '../types/tour.types'
+import { Aggregate, model, Query, Schema } from 'mongoose'
 import slugify from 'slugify'
+import { TTour } from '../types/tour.types'
 
 const TourSchema = new Schema(
     {
@@ -62,7 +62,6 @@ const TourSchema = new Schema(
         },
         images: {
             type: [String],
-            required: [true, 'A Tour must contain at least 3 images.'],
         },
         summary: {
             type: String,
@@ -71,7 +70,6 @@ const TourSchema = new Schema(
         },
         description: {
             type: String,
-            required: [true, 'A Tour must have a description.'],
             trim: true,
         },
         coverImage: {
