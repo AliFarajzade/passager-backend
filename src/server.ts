@@ -1,6 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import app from './app'
+
+process.on('uncaughtException', (err: any) => {
+    console.log('🧨️🧨️UNHANDLED Execption🧨️🧨️:\n')
+    console.log(err.name, err.message)
+    process.exit(1)
+})
 
 dotenv.config({ path: `${__dirname}/../.env` })
 
