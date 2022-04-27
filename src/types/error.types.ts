@@ -17,3 +17,12 @@ export interface IMongodbError {
         name: string
     }
 }
+
+export interface IValidationError {
+    errors: Record<any, any>
+    statusCode: number
+    _message: string
+    status: string
+    name: string
+    message: string
+}
