@@ -20,7 +20,6 @@ app.all('*', (req: Request, _: Response, next: NextFunction) =>
     next(new AppError(`No routes specified at ${req.originalUrl}`, 404))
 )
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use(errorMiddleware)
 
 export default app
