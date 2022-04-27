@@ -22,8 +22,8 @@ const TourSchema = new Schema(
         averageRating: {
             type: Number,
             default: 0,
-            min: [0.1, 'A Tour rating must be more or equal than 0.1'],
-            max: [5.0, 'A Tour rating must be less or equal than 5.0'],
+            min: [0.1, 'A Tour rating must be more or equal than 0.1.'],
+            max: [5.0, 'A Tour rating must be less or equal than 5.0.'],
         },
         price: {
             type: Number,
