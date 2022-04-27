@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from 'express'
 import type { CastError } from 'mongoose'
 import { TControllerCRUDFunction } from '../types/controllers.types'
-import { IExpressError, IMongodbError } from '../types/error.types'
+import {
+    IExpressError,
+    IMongodbError,
+    IValidationError,
+} from '../types/error.types'
 import AppError from '../utils/app-error.class'
 
 const handleCastError = (err: CastError) =>
@@ -9,6 +13,13 @@ const handleCastError = (err: CastError) =>
 
 const handleDuplicateKeyError = (err: IMongodbError) =>
     new AppError(`Duplicate field error ${JSON.stringify(err.keyValue)}`, 400)
+
+const handleValidationError = (err: IValidationError) => {
+    const messages = Object.entries(err.errors)
+        .map(arr => arr[1].message)
+        .join(' ')
+    return new AppError(`Validation Error: ${messages}`, 400)
+}
 
 const handleErrorDev = (res: Response, err: IExpressError) => {
     res.status(err.statusCode).json({
@@ -47,11 +58,13 @@ export const errorMiddleware = (
     if (process.env.NODE_ENV === 'development') {
         handleErrorDev(res, err)
     } else if (process.env.NODE_ENV === 'production') {
+        // Handling Cast erroes
         if (err.name === 'CastError') {
             const newError = handleCastError(err as unknown as CastError)
             return handleErrorProd(res, newError)
         }
 
+        // Handling duplicate field error
         if (err.code === 11000) {
             const newError = handleDuplicateKeyError(
                 err as unknown as IMongodbError
@@ -59,6 +72,15 @@ export const errorMiddleware = (
             return handleErrorProd(res, newError)
         }
 
+        // Handling fields validation error
+        if (err.name === 'ValidationError') {
+            const newError = handleValidationError(
+                err as unknown as IValidationError
+            )
+            return handleErrorProd(res, newError)
+        }
+
+        // Handling general errors
         handleErrorProd(res, err)
     }
 }
