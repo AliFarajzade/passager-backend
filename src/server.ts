@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
-import app from './app'
 import mongoose from 'mongoose'
+import app from './app'
 
 dotenv.config({ path: `${__dirname}/../.env` })
 
@@ -14,6 +14,14 @@ mongoose
     .then(() => console.log('Connection with db has been established.'))
     .catch(err => console.log(err))
 
-app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
     console.log(`App is running on port ${process.env.PORT}`)
+})
+
+process.on('unhandledRejection', (err: any) => {
+    console.log('🧨️🧨️UNHANDLED PROMISE REGECTION🧨️🧨️:\n')
+    console.log(err.name, err.message)
+    server.close(() => {
+        process.exit(1)
+    })
 })
