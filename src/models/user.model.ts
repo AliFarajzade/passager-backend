@@ -15,7 +15,7 @@ const UsersSchema = new Schema({
         lowercase: true,
         validate: {
             validator: function (this: TUser, value: string) {
-                return !emailRegex.test(value)
+                return emailRegex.test(value)
             },
             message: 'Email is not valid.',
         },
@@ -26,7 +26,7 @@ const UsersSchema = new Schema({
         minlength: [8, 'Password must be at least 8 characters'],
         validate: {
             validator: function (this: TUser, value: string) {
-                return !passwordRegex.test(value)
+                return passwordRegex.test(value)
             },
             message:
                 'Invalid Password: Password must contain at least special character (#?!@$ %^&*-), 1 uppercase letter and 1 number',
@@ -38,7 +38,7 @@ const UsersSchema = new Schema({
         minlength: [8, 'Confirm Password must be at least 8 characters'],
         validate: {
             validator: function (this: TUser, value: string) {
-                return !(this.password === value)
+                return this.password === value
             },
             message: 'Invalid Confirm Password: Passwords do not match',
         },
