@@ -3,5 +3,5 @@ export type TUser = {
     email: string
     photo: string
     password: string
-    confirmPassword: string
+    confirmPassword?: string
 }
