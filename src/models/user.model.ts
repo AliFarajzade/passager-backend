@@ -34,6 +34,7 @@ const UserSchema = new Schema({
             message:
                 'Invalid Password: Password must contain at least special character (#?!@$ %^&*-), 1 uppercase letter and 1 number',
         },
+        select: false,
     },
     confirmPassword: {
         type: String,
@@ -66,6 +67,11 @@ UserSchema.pre(
         next()
     }
 )
+
+UserSchema.methods.comparePasswords = async (
+    requestPassword: string,
+    hashedPassword: string
+) => await bcryptjs.compare(requestPassword, hashedPassword)
 
 const UserModel = model('users', UserSchema)
 
