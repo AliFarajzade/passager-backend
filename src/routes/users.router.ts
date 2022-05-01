@@ -3,7 +3,8 @@ import * as authControllers from '../controllers/auth.controller'
 
 const router = Router()
 
-router.post('/signup', authControllers.signUpUser)
+router.post('/register', authControllers.signUpUser)
+router.post('/enter', authControllers.logInUser)
 
 // prettier-ignore
 router
