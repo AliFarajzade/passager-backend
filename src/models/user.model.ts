@@ -48,6 +48,10 @@ const UserSchema = new Schema({
             message: 'Invalid Confirm Password: Passwords do not match',
         },
     },
+    passwordChangedAt: {
+        type: Date,
+        required: false,
+    },
 })
 
 // Document Middleware
