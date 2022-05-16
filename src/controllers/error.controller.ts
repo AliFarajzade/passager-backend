@@ -3,6 +3,7 @@ import type { CastError } from 'mongoose'
 import { TControllerCRUDFunction } from '../types/controllers.types'
 import {
     IExpressError,
+    IJSONWebTokenError,
     IMongodbError,
     IValidationError,
 } from '../types/error.types'
@@ -20,6 +21,14 @@ const handleValidationError = (err: IValidationError) => {
         .join(' ')
     return new AppError(`Validation Error: ${messages}`, 400)
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const handleExpiredTokenError = (_: IJSONWebTokenError) =>
+    new AppError('Token has been expired.', 401)
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const handleInvlidSignaturError = (_: IJSONWebTokenError) =>
+    new AppError('Invalid signature.', 401)
 
 const handleErrorDev = (res: Response, err: IExpressError) => {
     res.status(err.statusCode).json({
@@ -55,9 +64,9 @@ export const errorMiddleware = (
     err.statusCode = err.statusCode || 500
     err.status = err.status || 'error'
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'production') {
         handleErrorDev(res, err)
-    } else if (process.env.NODE_ENV === 'production') {
+    } else if (process.env.NODE_ENV === 'development') {
         // Handling Cast erroes
         if (err.name === 'CastError') {
             const newError = handleCastError(err as unknown as CastError)
@@ -77,6 +86,18 @@ export const errorMiddleware = (
             const newError = handleValidationError(
                 err as unknown as IValidationError
             )
+            return handleErrorProd(res, newError)
+        }
+
+        if (err.name === 'TokenExpiredError') {
+            const newError = handleExpiredTokenError(
+                err as unknown as IJSONWebTokenError
+            )
+            return handleErrorProd(res, newError)
+        }
+
+        if (err.name === 'JsonWebTokenError') {
+            const newError = handleInvlidSignaturError(err)
             return handleErrorProd(res, newError)
         }
 
