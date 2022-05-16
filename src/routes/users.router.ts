@@ -10,7 +10,7 @@ router.post('/enter', authControllers.logInUser)
 // prettier-ignore
 router
     .route('/')
-    .get(usersContoller.getAllUsers)
+    .get(authControllers.protectRoute, usersContoller.getAllUsers)
 
 // prettier-ignore
 router
