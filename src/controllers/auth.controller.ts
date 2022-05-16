@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import UserModel from '../models/user.model'
+import { TJWTDecodedType } from '../types/user.types'
 import AppError from '../utils/app-error.class'
 import { catchAsync } from './error.controller'
 
@@ -56,3 +57,51 @@ export const logInUser = catchAsync(
         })
     }
 )
+
+export const protectRoute = catchAsync(
+    async (req: Request, _: Response, next: NextFunction) => {
+        let token = ''
+
+        // 1) Check for JWT existence
+        if (
+            !req.headers.authorization ||
+            !req.headers.authorization.startsWith('Bearer') ||
+            !req.headers.authorization.split(' ')[1]
+        )
+            return next(
+                new AppError('You are unauthorized! Please log in first', 401)
+            )
+
+        token = req.headers.authorization.split(' ')[1]
+
+        // 2) Check for JWT validation
+        const { id, iat } = jwt.verify(
+            token,
+            process.env.JWT_SECRET as string
+        ) as TJWTDecodedType & JwtPayload
+
+        // 3) Check if user still exists
+        const user = await UserModel.findById(id)
+        if (!user)
+            return next(
+                new AppError(
+                    'There is no account corresponding to this ID.',
+                    401
+                )
+            )
+
+        // 4) Check if user changed the password since token generation
+        const hasPasswordChanged = user.hasPasswordChange(iat)
+        if (hasPasswordChanged)
+            return next(
+                new AppError(
+                    'Password has changed since the token was generated, please log in again.',
+                    401
+                )
+            )
+
+        next()
+    }
+)
+
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyODIwOTBkMGU4YTRhMDBjZjg3ZTMwNiIsImlhdCI6MTY1MjY4OTE2NiwiZXhwIjoxNjU1MjgxMTY2fQ.ekt_zx1qJUWwu3OLuCEoO8ijYanTl6pT-bAPY6E-VNE
