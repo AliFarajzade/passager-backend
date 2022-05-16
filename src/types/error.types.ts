@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface IExpressError extends Error {
     statusCode: number
     status: string
@@ -25,4 +26,12 @@ export interface IValidationError {
     status: string
     name: string
     message: string
+}
+
+export interface IJSONWebTokenError {
+    name: string
+    message: string
+    expiredAt?: string
+    statusCode: number
+    status: string
 }
