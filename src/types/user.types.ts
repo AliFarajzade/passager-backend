@@ -4,4 +4,7 @@ export type TUser = {
     photo: string
     password: string
     confirmPassword?: string
+    passwordChangedAt?: Date
 }
+
+export type TJWTDecodedType = { id: string; iat: number; exp: number }
