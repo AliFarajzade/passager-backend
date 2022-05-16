@@ -18,6 +18,8 @@ export const signUpUser = catchAsync(
             email: req.body.email,
             password: req.body.password,
             confirmPassword: req.body.confirmPassword,
+            role: req.body.role,
+            photo: req.body.photo,
         }
 
         const newUser = await UserModel.create(data)
