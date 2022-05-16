@@ -77,6 +77,17 @@ UserSchema.methods.comparePasswords = async (
     hashedPassword: string
 ) => await bcryptjs.compare(requestPassword, hashedPassword)
 
+UserSchema.methods.hasPasswordChange = function (
+    this: TUser,
+    JWTIssuedAt: number
+) {
+    if (!this.passwordChangedAt) return false
+    else
+        return (
+            new Date(`${this.passwordChangedAt}`).getTime() / 1000 > JWTIssuedAt
+        )
+}
+
 const UserModel = model('users', UserSchema)
 
 export default UserModel
