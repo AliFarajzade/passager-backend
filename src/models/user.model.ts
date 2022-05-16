@@ -52,6 +52,16 @@ const UserSchema = new Schema({
         type: Date,
         required: false,
     },
+    photo: String,
+    role: {
+        type: String,
+        enum: {
+            values: ['user', 'guide', 'lead-guide', 'admin'],
+            message:
+                'Rules can only be "user", "guide", "lead-guide" and "admin".',
+        },
+        default: 'user',
+    },
 })
 
 // Document Middleware
