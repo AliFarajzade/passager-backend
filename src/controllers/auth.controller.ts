@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import UserModel from '../models/user.model'
-import { TJWTDecodedType } from '../types/user.types'
+import { TJWTDecodedType, TUser } from '../types/user.types'
 import AppError from '../utils/app-error.class'
 import { catchAsync } from './error.controller'
 
@@ -61,7 +61,8 @@ export const logInUser = catchAsync(
 )
 
 export const protectRoute = catchAsync(
-    async (req: Request, _: Response, next: NextFunction) => {
+    // prettier-ignore
+    async (req: (Request & Partial<{currentUser: TUser}>), _: Response, next: NextFunction) => {
         let token = ''
 
         // 1) Check for JWT existence
@@ -102,8 +103,29 @@ export const protectRoute = catchAsync(
                 )
             )
 
+        req.currentUser = user
         next()
     }
 )
 
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyODIwOTBkMGU4YTRhMDBjZjg3ZTMwNiIsImlhdCI6MTY1MjY4OTE2NiwiZXhwIjoxNjU1MjgxMTY2fQ.ekt_zx1qJUWwu3OLuCEoO8ijYanTl6pT-bAPY6E-VNE
+// Authorization middleware
+export const restrictTo = (...roles: string[]) =>
+    catchAsync(
+        async (
+            req: Request & Partial<{ currentUser: TUser }>,
+            res: Response,
+            next: NextFunction
+        ) => {
+            if (!req.currentUser)
+                return next(new AppError('You are not authenticated.', 401))
+            if (!roles.includes(req.currentUser.role))
+                return next(
+                    new AppError(
+                        "You don't have permission to perfom this action.",
+                        403
+                    )
+                )
+
+            next()
+        }
+    )
