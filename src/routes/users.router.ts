@@ -7,10 +7,13 @@ const router = Router()
 router.post('/register', authControllers.signUpUser)
 router.post('/enter', authControllers.logInUser)
 
-// prettier-ignore
 router
     .route('/')
-    .get(authControllers.protectRoute, usersContoller.getAllUsers)
+    .get(
+        authControllers.protectRoute,
+        authControllers.restrictTo('admin', 'lead-guide'),
+        usersContoller.getAllUsers
+    )
 
 // prettier-ignore
 router
