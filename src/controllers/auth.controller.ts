@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import crypto from 'crypto'
 import { NextFunction, Request, Response } from 'express'
 import jwt, { JwtPayload } from 'jsonwebtoken'
+import { Query } from 'mongoose'
 import UserModel from '../models/user.model'
 import { TJWTDecodedType, TUser } from '../types/user.types'
 import AppError from '../utils/app-error.class'
+import { sendEmail } from '../utils/email.helper'
+import { emailRegex } from '../utils/regex'
 import { catchAsync } from './error.controller'
 
 const generateToken = (id: string) =>
@@ -129,3 +134,98 @@ export const restrictTo = (...roles: string[]) =>
             next()
         }
     )
+
+export const forgotPassword = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { email } = req.body
+
+        // 1) Check for email existence and format validation
+        if (!email || !emailRegex.test(email))
+            return next(new AppError('Please provide a valid email.', 400))
+
+        // 2) Check for email exsitence in db
+        const user = await UserModel.findOne({ email })
+        if (!user) return next(new AppError('This user does not exist.', 404))
+
+        // 3) Generate a token and save it to db
+        const resetToken = user.createPasswordResetToken() as string
+        await user.save({ validateBeforeSave: false })
+
+        // 4) Send the token to user's email
+        const resetURL = `${req.protocol}://${req.get(
+            'host'
+        )}/api/v1/users/resetPassword/${resetToken}`
+
+        const message = `Forgot your Password? Submit a PATCH request with your new password and password confirm to: ${resetURL}.\n Please ignore if this is not your request.`
+
+        try {
+            await sendEmail({
+                to: user.email,
+                subject: 'Forgot password',
+                text: message,
+            })
+
+            res.status(200).json({
+                status: 'success',
+                message: 'Token sent to email successfully.',
+            })
+        } catch (error) {
+            user.hashedResetPasswordToken = undefined
+            user.resetPasswordTokenExpireTime = undefined
+            await user.save({ validateBeforeSave: false })
+            return next(
+                new AppError('Could not send the email at the moment.', 500)
+            )
+        }
+    }
+)
+export const resetPassword = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { password, confirmPassword } = req.body
+        const { token } = req.params
+        // 1) Check if there is a password and confirm password.
+        if (!password || !confirmPassword)
+            return next(
+                new AppError(
+                    'Please provide password and confirm password.',
+                    400
+                )
+            )
+
+        // 2) Check if there is a user with this token. Check the token expire time
+        const hashedToken = crypto
+            .createHash('sha256')
+            .update(token)
+            .digest('hex')
+
+        const user = (await UserModel.findOne({
+            hashedResetPasswordToken: hashedToken,
+            resetPasswordTokenExpireTime: { $gt: Date.now() },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        })) as Query<any, any, Record<string, never>, any> &
+            TUser & { save: () => Promise<unknown> }
+
+        if (!user)
+            return next(
+                new AppError('Token is either invalid or has expired.', 400)
+            )
+
+        // 3) Upadte document in db with new password and delete the hashedResetPasswordToken and resetPasswordTokenExpireTime.
+        user.password = password
+        user.confirmPassword = confirmPassword
+        user.hashedResetPasswordToken = undefined
+        user.resetPasswordTokenExpireTime = undefined
+
+        await user.save()
+        // 4) Add changedPasswordAt field to the document.
+        // (Handled with document middleware in user model)
+
+        // 5) Log in user
+        const JWTToken = generateToken(user._id!)
+
+        res.status(200).json({
+            status: 'success',
+            token: JWTToken,
+        })
+    }
+)
