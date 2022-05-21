@@ -9,6 +9,11 @@ router.post('/enter', authControllers.logInUser)
 
 router.post('/forgot', authControllers.forgotPassword)
 router.patch('/reset/:token', authControllers.resetPassword)
+router.patch(
+    '/change-password',
+    authControllers.protectRoute,
+    authControllers.updatePassword
+)
 
 router
     .route('/')
