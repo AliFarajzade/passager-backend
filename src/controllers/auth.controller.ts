@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import crypto from 'crypto'
 import { NextFunction, Request, Response } from 'express'
@@ -89,7 +90,7 @@ export const protectRoute = catchAsync(
         ) as TJWTDecodedType & JwtPayload
 
         // 3) Check if user still exists
-        const user = await UserModel.findById(id)
+        const user = await UserModel.findById(id).select('+password')
         if (!user)
             return next(
                 new AppError(
@@ -226,6 +227,52 @@ export const resetPassword = catchAsync(
         res.status(200).json({
             status: 'success',
             token: JWTToken,
+        })
+    }
+)
+
+export const updatePassword = catchAsync(
+    async (
+        req: Request & Partial<{ currentUser: TUser }>,
+        res: Response,
+        next: NextFunction
+    ) => {
+        const { oldPassword, newPassword, confirmNewPassword } = req.body
+        // 0) Check if there is an old password and a new password.
+        if (!oldPassword || !newPassword || !confirmNewPassword)
+            return next(new AppError('Please provide valid passwords.', 400))
+
+        // 1) Check if the passwords are the same
+        if (oldPassword === newPassword)
+            return next(new AppError('Please provide a new password.', 400))
+
+        if (!req.currentUser) return next()
+        const user = req.currentUser as any
+
+        // 3) Check if the old password match with the passowrd in db.
+        const doesMatch = await user.comparePasswords(
+            oldPassword,
+            user.password
+        )
+
+        if (!doesMatch)
+            return next(new AppError('Old password is not correct.', 400))
+
+        // 4) Change the password,
+        user.password = newPassword
+        user.confirmPassword = confirmNewPassword
+
+        await user.save()
+
+        // 5) Update passwordChangedAt field.
+        // (Handled by document middleware function.)
+
+        // 6) Create a new JWT and send it back to the client.
+        const newToken = generateToken(user._id)
+
+        res.status(200).json({
+            status: 'success',
+            token: newToken,
         })
     }
 )
