@@ -7,6 +7,9 @@ const router = Router()
 router.post('/register', authControllers.signUpUser)
 router.post('/enter', authControllers.logInUser)
 
+router.post('/forgot', authControllers.forgotPassword)
+router.patch('/reset/:token', authControllers.resetPassword)
+
 router
     .route('/')
     .get(
