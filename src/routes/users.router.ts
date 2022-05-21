@@ -15,6 +15,12 @@ router.patch(
     authControllers.updatePassword
 )
 
+router.patch(
+    '/update',
+    authControllers.protectRoute,
+    authControllers.updateProfile
+)
+
 router
     .route('/')
     .get(
