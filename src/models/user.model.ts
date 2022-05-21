@@ -1,4 +1,5 @@
 import bcryptjs from 'bcryptjs'
+import crypto from 'crypto'
 import { model, Schema } from 'mongoose'
 import { TUser } from '../types/user.types'
 import { emailRegex, passwordRegex } from '../utils/regex'
@@ -62,25 +63,29 @@ const UserSchema = new Schema({
         },
         default: 'user',
     },
+    hashedResetPasswordToken: String,
+    resetPasswordTokenExpireTime: Date,
 })
 
 // Document Middleware
-UserSchema.pre(
-    'save',
-    async function (
-        this: TUser & { isModified: (field: string) => boolean },
-        next
-    ) {
-        // If the password being initialize or change.
-        if (!this.isModified?.('password')) return next()
+UserSchema.pre('save', async function (this: TUser, next) {
+    // If the password being initialize or change.
+    if (!this.isModified?.('password')) return next()
 
-        // Hashing the password
-        this.password = await bcryptjs.hash(this.password, 12)
+    // Hashing the password
+    this.password = await bcryptjs.hash(this.password, 12)
 
-        this.confirmPassword = undefined
-        next()
-    }
-)
+    this.confirmPassword = undefined
+    next()
+})
+
+UserSchema.pre('save', async function (this: TUser, next) {
+    if (!this.isModified?.('password') || this.isNew) return next()
+
+    this.passwordChangedAt = Date.now() - 1000
+
+    next()
+})
 
 UserSchema.methods.comparePasswords = async (
     requestPassword: string,
@@ -96,6 +101,22 @@ UserSchema.methods.hasPasswordChange = function (
         return (
             new Date(`${this.passwordChangedAt}`).getTime() / 1000 > JWTIssuedAt
         )
+}
+
+UserSchema.methods.createPasswordResetToken = function (this: TUser) {
+    const resetToken = crypto.randomBytes(32).toString('hex')
+
+    this.hashedResetPasswordToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex')
+
+    this.resetPasswordTokenExpireTime = Date.now() + 10 * 60 * 1000
+
+    console.log('resetToken: ', resetToken)
+    console.log('hashedResetPasswordToken: ', this.hashedResetPasswordToken)
+
+    return resetToken
 }
 
 const UserModel = model('users', UserSchema)
