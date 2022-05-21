@@ -8,7 +8,14 @@ const UserSchema = new Schema({
     name: {
         type: String,
         trim: true,
-        required: true,
+        required: [true, 'A user must have a name'],
+        minlength: 2,
+        maxlength: 32,
+        validate: {
+            validator: (value: string) =>
+                !value.split('').every(char => !!parseInt(char)),
+            message: 'Name must only contain english letters.',
+        },
     },
     email: {
         type: String,
@@ -17,9 +24,7 @@ const UserSchema = new Schema({
         unique: true,
         lowercase: true,
         validate: {
-            validator: function (this: TUser, value: string) {
-                return emailRegex.test(value)
-            },
+            validator: (value: string) => emailRegex.test(value),
             message: 'Email is not valid.',
         },
     },
@@ -29,9 +34,7 @@ const UserSchema = new Schema({
         minlength: [8, 'Password must be at least 8 characters'],
         validate: {
             // This will only work on create and save method.
-            validator: function (this: TUser, value: string) {
-                return passwordRegex.test(value)
-            },
+            validator: (value: string) => passwordRegex.test(value),
             message:
                 'Invalid Password: Password must contain at least special character (#?!@$ %^&*-), 1 uppercase letter and 1 number',
         },
