@@ -276,3 +276,50 @@ export const updatePassword = catchAsync(
         })
     }
 )
+
+export const updateProfile = catchAsync(
+    async (
+        req: Request & Partial<{ currentUser: TUser }>,
+        res: Response,
+        next: NextFunction
+    ) => {
+        // 1) If there is a password, return with error.
+        if (
+            req.body.password ||
+            req.body.confirmPassword ||
+            req.body.newPassword ||
+            req.body.role
+        )
+            return next(
+                new AppError(
+                    'You can only change name, email and your photo with this end-point',
+                    400
+                )
+            )
+
+        // 2) Update the document.
+        if (!req.currentUser) return
+
+        const updateValues = {
+            email: req.body.email ?? req.currentUser.email,
+            photo: req.body.photo ?? req.currentUser.photo,
+            name: req.body.name ?? req.currentUser.name,
+        }
+
+
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            req.currentUser._id,
+            updateValues,
+            {
+                new: true,
+                runValidators: true,
+            }
+        )
+
+
+        res.status(200).json({
+            status: 'success',
+            user: updatedUser,
+        })
+    }
+)
