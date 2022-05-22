@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from 'express'
+import helmet from 'helmet'
 import morgan from 'morgan'
 import { errorMiddleware } from './controllers/error.controller'
 import toursRouter from './routes/tours.router'
@@ -7,6 +8,9 @@ import AppError from './utils/app-error.class'
 import { customRateLimiter } from './utils/limiter.helper'
 
 const app = express()
+
+process.env.NODE_ENV === 'production' && app.use(helmet())
+process.env.NODE_ENV === 'development' && app.use(morgan('dev'))
 
 // Genral middlewares
 app.use(
@@ -17,8 +21,8 @@ app.use(
         'Too many requests! Please try again later.'
     )
 )
+
 app.use(express.json())
-process.env.NODE_ENV === 'development' && app.use(morgan('dev'))
 
 // Routers middlewares
 app.use('/api/v1/tours', toursRouter)
