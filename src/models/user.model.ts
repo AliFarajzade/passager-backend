@@ -81,7 +81,7 @@ UserSchema.pre('save', async function (this: TUser, next) {
     if (!this.isModified?.('password')) return next()
 
     // Hashing the password
-    this.password = await bcryptjs.hash(this.password, 12)
+    this.password = await bcryptjs.hash(this.password!, 12)
 
     this.confirmPassword = undefined
     next()
