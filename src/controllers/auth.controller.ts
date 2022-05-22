@@ -316,10 +316,27 @@ export const updateProfile = catchAsync(
             }
         )
 
-
         res.status(200).json({
             status: 'success',
             user: updatedUser,
+        })
+    }
+)
+
+export const deleteMe = catchAsync(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (
+        req: Request & Partial<{ currentUser: TUser }>,
+        res: Response,
+        _: NextFunction
+    ) => {
+        // 1) Set active field to false.
+        await UserModel.findByIdAndUpdate(req.currentUser?._id, {
+            active: false,
+        })
+        res.status(204).json({
+            status: 'success',
+            message: 'User got deleted.',
         })
     }
 )
