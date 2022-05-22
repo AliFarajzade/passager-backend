@@ -16,6 +16,44 @@ const generateToken = (id: string) =>
         expiresIn: process.env.JWT_EXPIRE_TIME as string,
     })
 
+const sendToken = (
+    userId: string,
+    res: Response,
+    user: Record<string, never> | TUser = {}
+) => {
+    const token = generateToken(userId)
+    const cookieOptions: Record<string, unknown> = {
+        expires: new Date(
+            Date.now() +
+                (process.env.JWT_COOKIE_EXPIRE_TIME as unknown as number) *
+                    24 *
+                    60 *
+                    60 *
+                    1000
+        ),
+        httpOnly: true,
+    }
+
+    if (process.env.NODE_ENV === 'production') cookieOptions.secure = true
+
+    res.cookie('jwt', token, cookieOptions)
+
+    if (!Object.keys(user).length) {
+        user.password = undefined
+        res.status(201).json({
+            status: 'success',
+            token,
+            data: {
+                user,
+            },
+        })
+    } else
+        res.status(201).json({
+            status: 'success',
+            token,
+        })
+}
+
 export const signUpUser = catchAsync(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (req: Request, res: Response, _: NextFunction) => {
@@ -30,15 +68,7 @@ export const signUpUser = catchAsync(
 
         const newUser = await UserModel.create(data)
 
-        const token = generateToken(newUser._id)
-
-        res.status(201).json({
-            status: 'success',
-            token,
-            data: {
-                user: newUser,
-            },
-        })
+        sendToken(newUser._id, res, newUser)
     }
 )
 
@@ -58,11 +88,8 @@ export const logInUser = catchAsync(
             return next(new AppError('Incorrect email or password.', 401))
 
         // 3) Send token to client if everything is ok.
-        const token = generateToken(user._id)
-        res.status(200).json({
-            status: 'success',
-            token,
-        })
+
+        sendToken(user._id, res)
     }
 )
 
@@ -222,12 +249,7 @@ export const resetPassword = catchAsync(
         // (Handled with document middleware in user model)
 
         // 5) Log in user
-        const JWTToken = generateToken(user._id!)
-
-        res.status(200).json({
-            status: 'success',
-            token: JWTToken,
-        })
+        sendToken(user._id!, res)
     }
 )
 
@@ -268,12 +290,7 @@ export const updatePassword = catchAsync(
         // (Handled by document middleware function.)
 
         // 6) Create a new JWT and send it back to the client.
-        const newToken = generateToken(user._id)
-
-        res.status(200).json({
-            status: 'success',
-            token: newToken,
-        })
+        sendToken(user._id, res)
     }
 )
 
@@ -305,7 +322,6 @@ export const updateProfile = catchAsync(
             photo: req.body.photo ?? req.currentUser.photo,
             name: req.body.name ?? req.currentUser.name,
         }
-
 
         const updatedUser = await UserModel.findByIdAndUpdate(
             req.currentUser._id,
