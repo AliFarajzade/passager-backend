@@ -68,6 +68,11 @@ const UserSchema = new Schema({
     },
     hashedResetPasswordToken: String,
     resetPasswordTokenExpireTime: Date,
+    active: {
+        type: Boolean,
+        default: true,
+        select: false,
+    },
 })
 
 // Document Middleware
