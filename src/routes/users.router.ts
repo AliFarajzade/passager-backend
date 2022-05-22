@@ -21,6 +21,12 @@ router.patch(
     authControllers.updateProfile
 )
 
+router.delete(
+    '/delete-me',
+    authControllers.protectRoute,
+    authControllers.deleteMe
+)
+
 router
     .route('/')
     .get(
