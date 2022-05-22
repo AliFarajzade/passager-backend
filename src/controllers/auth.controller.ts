@@ -38,7 +38,7 @@ const sendToken = (
 
     res.cookie('jwt', token, cookieOptions)
 
-    if (!Object.keys(user).length) {
+    if (Object.keys(user).length) {
         user.password = undefined
         res.status(201).json({
             status: 'success',
