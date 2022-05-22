@@ -1,6 +1,6 @@
 import bcryptjs from 'bcryptjs'
 import crypto from 'crypto'
-import { model, Schema } from 'mongoose'
+import { model, Query, Schema } from 'mongoose'
 import { TUser } from '../types/user.types'
 import { emailRegex, passwordRegex } from '../utils/regex'
 
@@ -95,6 +95,18 @@ UserSchema.pre('save', async function (this: TUser, next) {
     next()
 })
 
+// Query middleware
+UserSchema.pre(
+    /^find/,
+    // this: points to the current query
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function (this: Query<any[], any, Record<string, any>, any>, next) {
+        this.find({ active: { $ne: false } })
+        next()
+    }
+)
+
+// Schema methods
 UserSchema.methods.comparePasswords = async (
     requestPassword: string,
     hashedPassword: string
