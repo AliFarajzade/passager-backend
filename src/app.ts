@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express'
 import mongoSanitize from 'express-mongo-sanitize'
 import helmet from 'helmet'
+import hpp from 'hpp'
 import morgan from 'morgan'
 import xss from 'xss-clean'
 import { errorMiddleware } from './controllers/error.controller'
@@ -23,7 +24,22 @@ app.use(
     )
 )
 
-app.use(express.json({ limit: '10kb' }), helmet(), mongoSanitize(), xss())
+app.use(
+    express.json({ limit: '10kb' }),
+    helmet(),
+    mongoSanitize(),
+    xss(),
+    hpp({
+        whitelist: [
+            'duration',
+            'price',
+            'difficulty',
+            'averageRating',
+            'ratingsQuantity',
+            'maxGroupSize',
+        ],
+    })
+)
 
 // Routers middlewares
 app.use('/api/v1/tours', toursRouter)
