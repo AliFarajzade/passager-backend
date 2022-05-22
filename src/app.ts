@@ -1,6 +1,8 @@
 import express, { NextFunction, Request, Response } from 'express'
+import mongoSanitize from 'express-mongo-sanitize'
 import helmet from 'helmet'
 import morgan from 'morgan'
+import xss from 'xss-clean'
 import { errorMiddleware } from './controllers/error.controller'
 import toursRouter from './routes/tours.router'
 import usersRouter from './routes/users.router'
@@ -9,7 +11,6 @@ import { customRateLimiter } from './utils/limiter.helper'
 
 const app = express()
 
-process.env.NODE_ENV === 'production' && app.use(helmet())
 process.env.NODE_ENV === 'development' && app.use(morgan('dev'))
 
 // Genral middlewares
@@ -22,7 +23,7 @@ app.use(
     )
 )
 
-app.use(express.json({ limit: '10kb' }))
+app.use(express.json({ limit: '10kb' }), helmet(), mongoSanitize(), xss())
 
 // Routers middlewares
 app.use('/api/v1/tours', toursRouter)
