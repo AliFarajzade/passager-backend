@@ -78,7 +78,7 @@ const TourSchema = new Schema(
         },
         secretTour: {
             type: Boolean,
-            defaultValue: false,
+            default: false,
         },
         startDates: [Date],
         createdAt: {
