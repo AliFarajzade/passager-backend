@@ -115,6 +115,10 @@ const TourSchema = new Schema(
                 day: Number,
             },
         ],
+        guides: {
+            type: [Schema.Types.ObjectId],
+            ref: 'users',
+        },
     },
     {
         toJSON: { virtuals: true },
