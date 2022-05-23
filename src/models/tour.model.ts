@@ -85,6 +85,36 @@ const TourSchema = new Schema(
             type: Date,
             default: Date.now(),
         },
+        startLocation: {
+            // GeoJSON
+            type: {
+                type: String,
+                default: 'Point',
+                enum: [
+                    'Point',
+                    'Start location type cannot be set or modified.',
+                ],
+            },
+            coordinates: [Number],
+            address: String,
+            description: String,
+        },
+        locations: [
+            {
+                type: {
+                    type: String,
+                    default: 'Point',
+                    enum: [
+                        'Point',
+                        'Start location type cannot be set or modified.',
+                    ],
+                },
+                coordinates: [Number],
+                address: String,
+                description: String,
+                day: Number,
+            },
+        ],
     },
     {
         toJSON: { virtuals: true },
