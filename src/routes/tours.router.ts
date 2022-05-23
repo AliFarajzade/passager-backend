@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { protectRoute, restrictTo } from '../controllers/auth.controller'
 import * as toursController from '../controllers/tours.controller'
 
 const router = Router()
@@ -7,7 +8,7 @@ const router = Router()
 router
     .route('/')
     .get(toursController.getAllTours)
-    .post(toursController.createNewTour)
+    .post(protectRoute, restrictTo('admin', 'lead-guide'), toursController.createNewTour)
 
 // prettier-ignore
 router 
