@@ -5,6 +5,7 @@ import hpp from 'hpp'
 import morgan from 'morgan'
 import xss from 'xss-clean'
 import { errorMiddleware } from './controllers/error.controller'
+import reviewRouter from './routes/reviews.router'
 import toursRouter from './routes/tours.router'
 import usersRouter from './routes/users.router'
 import AppError from './utils/app-error.class'
@@ -44,6 +45,7 @@ app.use(
 // Routers middlewares
 app.use('/api/v1/tours', toursRouter)
 app.use('/api/v1/users', usersRouter)
+app.use('/api/v1/reviews', reviewRouter)
 
 // Unknown route error
 app.all('*', (req: Request, _: Response, next: NextFunction) =>
