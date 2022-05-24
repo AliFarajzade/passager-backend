@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Aggregate, model, Query, Schema } from 'mongoose'
 import slugify from 'slugify'
 import { TTour } from '../types/tour.types'
@@ -132,11 +133,15 @@ TourSchema.virtual('priceToPound').get(function (this: TTour) {
 })
 
 // Document middlewares: Runs bewfore .save() and .create(); NoT WHEN UPDATE!
-TourSchema.pre('save', function (this: TTour, next) {
-    console.log('Adding slug...')
-    this.slug = slugify(this.name, { lower: true })
-    next()
-})
+TourSchema.pre(
+    'save',
+    function (this: TTour & Query<any, any, any, any>, next) {
+        // Adding slug
+        this.slug = slugify(this.name, { lower: true })
+
+        next()
+    }
+)
 
 TourSchema.post('save', function (this: TTour, doc, next) {
     console.log('Document Saved.')
@@ -150,6 +155,12 @@ TourSchema.pre(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function (this: Query<any[], any, Record<string, any>, any>, next) {
         this.find({ secretTour: { $ne: true } })
+
+        // Populate the ref fields
+        this.populate({
+            path: 'guides',
+        })
+
         next()
     }
 )
