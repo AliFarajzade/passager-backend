@@ -1,5 +1,6 @@
 import ReviewModel from '../models/review.model'
 import { catchAsync } from './error.controller'
+import { deleteDocument } from './factory.controller'
 
 export const getAllReviews = catchAsync(async (req, res, _next) => {
     let filter: Record<string, string> = {}
@@ -38,3 +39,13 @@ export const createNewReview = catchAsync(async (req, res, _next) => {
         },
     })
 })
+
+export const deleteReview = deleteDocument(ReviewModel)
+
+
+
+
+
+
+
+
