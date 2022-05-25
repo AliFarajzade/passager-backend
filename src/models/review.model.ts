@@ -42,9 +42,6 @@ const queryMiddlewarePopulateFields: PreMiddlewareFunction = function (
     this.populate({
         path: 'user',
         select: 'name photo',
-    }).populate({
-        path: 'tour',
-        select: 'name slug -guides',
     })
 
     next()
