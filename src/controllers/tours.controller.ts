@@ -3,6 +3,7 @@ import { catchAsync } from '../controllers/error.controller'
 import TourModel from '../models/tour.model'
 import APIFeatures from '../utils/api-handler.class'
 import AppError from '../utils/app-error.class'
+import { deleteDocument } from './factory.controller'
 
 // Get all tours
 export const getAllTours = catchAsync(
@@ -69,19 +70,7 @@ export const patchTourByID = catchAsync(async (req, res, next) => {
 })
 
 // Delete tour by ID
-export const deleteTourByID = catchAsync(async (req, res, next) => {
-    const { id } = req.params
-
-    const tourToDelete = await TourModel.findByIdAndRemove(id)
-
-    if (!tourToDelete)
-        return next(new AppError('No tour found with this ID.', 404))
-
-    res.status(202).json({
-        status: 'deleted',
-        data: {},
-    })
-})
+export const deleteTourByID = deleteDocument(TourModel)
 // Create new tour
 export const createNewTour = catchAsync(async (req, res, _next) => {
     const createdTour = await TourModel.create(req.body)
