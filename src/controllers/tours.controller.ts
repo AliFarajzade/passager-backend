@@ -30,7 +30,9 @@ export const getTourByID = catchAsync(
         // Get tours ID
         const { id } = req.params
 
-        const tourToFind = await TourModel.findById(id)
+        const tourToFind = await TourModel.findById(id).populate({
+            path: 'reviews',
+        })
 
         if (!tourToFind)
             return next(new AppError('No tour found with this ID.', 404))
