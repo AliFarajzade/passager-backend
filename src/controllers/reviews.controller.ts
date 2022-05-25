@@ -1,9 +1,15 @@
 import ReviewModel from '../models/review.model'
 import { catchAsync } from './error.controller'
 
-export const getAllReviews = catchAsync(async (_req, res, _next) => {
+export const getAllReviews = catchAsync(async (req, res, _next) => {
+    let filter: Record<string, string> = {}
+
+    if (req.params.id) filter = { tour: req.params.id }
+
+    console.log(filter)
+
     // 1) Get all review from database.
-    const reviews = await ReviewModel.find()
+    const reviews = await ReviewModel.find(filter)
 
     // 2) Send review back to the clinet.
     res.status(200).json({
