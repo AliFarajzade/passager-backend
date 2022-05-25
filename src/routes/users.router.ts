@@ -62,6 +62,14 @@ router
         usersContoller.getAllUsers
     )
 
+router
+    .route('/:id')
+    .delete(
+        authControllers.protectRoute,
+        authControllers.restrictTo('admin'),
+        usersContoller.deleteUser
+    )
+
 // prettier-ignore
 router
     .route('/:id')
