@@ -127,6 +127,13 @@ const TourSchema = new Schema(
     }
 )
 
+// Virtual populate
+TourSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'tour',
+    localField: '_id',
+})
+
 // Virtual properties
 TourSchema.virtual('priceToPound').get(function (this: TTour) {
     return this.price * 0.77
