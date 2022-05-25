@@ -16,6 +16,8 @@ export const getAllReviews = catchAsync(async (_req, res, _next) => {
 })
 
 export const createNewReview = catchAsync(async (req, res, _next) => {
+    if (!req.body.tour) req.body.tour = req.params.id
+
     // 1)  Create new tour in database.
     const newReview = await ReviewModel.create({
         ...req.body,
