@@ -1,5 +1,6 @@
-import { model, Schema } from 'mongoose'
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { model, Query, Schema } from 'mongoose'
+import { TReview } from '../types/review.types'
 const ReviewSchema = new Schema(
     {
         review: {
@@ -32,6 +33,26 @@ const ReviewSchema = new Schema(
         toObject: { virtuals: true },
     }
 )
+
+// Query middleware
+ReviewSchema.pre(
+    /^find/,
+    function (this: TReview & Query<any, any, any, any>, next) {
+        // For populating the ref fields.
+
+        this.populate({
+            path: 'user',
+            select: 'name photo',
+        }).populate({
+            path: 'tour',
+            select: 'name slug -guides',
+        })
+
+        next()
+    }
+)
+
+// 628b666b6e60221121e1b810
 
 const ReviewModel = model('reviews', ReviewSchema)
 
