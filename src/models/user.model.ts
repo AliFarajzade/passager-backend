@@ -1,6 +1,6 @@
 import bcryptjs from 'bcryptjs'
 import crypto from 'crypto'
-import { model, Query, Schema } from 'mongoose'
+import { model, PreMiddlewareFunction, Schema } from 'mongoose'
 import { TUser } from '../types/user.types'
 import { emailRegex, passwordRegex } from '../utils/regex'
 
@@ -75,8 +75,10 @@ const UserSchema = new Schema({
     },
 })
 
-// Document Middleware
-UserSchema.pre('save', async function (this: TUser, next) {
+const documentMiddlewareHashPassword: PreMiddlewareFunction = async function (
+    this,
+    next
+) {
     // If the password being initialize or change.
     if (!this.isModified?.('password')) return next()
 
@@ -85,26 +87,32 @@ UserSchema.pre('save', async function (this: TUser, next) {
 
     this.confirmPassword = undefined
     next()
-})
+}
 
-UserSchema.pre('save', async function (this: TUser, next) {
-    if (!this.isModified?.('password') || this.isNew) return next()
+const documentMiddlewareAddPasswordChagendAt: PreMiddlewareFunction =
+    async function (this, next) {
+        if (!this.isModified?.('password') || this.isNew) return next()
 
-    this.passwordChangedAt = Date.now() - 1000
+        this.passwordChangedAt = Date.now() - 1000
 
-    next()
-})
-
-// Query middleware
-UserSchema.pre(
-    /^find/,
-    // this: points to the current query
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function (this: Query<any[], any, Record<string, any>, any>, next) {
-        this.find({ active: { $ne: false } })
         next()
     }
-)
+
+const queryMiddlewareExcludeInActiveUsers: PreMiddlewareFunction = function (
+    this,
+    next
+) {
+    this.find({ active: { $ne: false } })
+    next()
+}
+
+// Document Middleware
+UserSchema.pre('save', documentMiddlewareHashPassword)
+
+UserSchema.pre('save', documentMiddlewareAddPasswordChagendAt)
+
+// Query middleware
+UserSchema.pre(/^find/, queryMiddlewareExcludeInActiveUsers)
 
 // Schema methods
 UserSchema.methods.comparePasswords = async (

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Aggregate, model, Query, Schema } from 'mongoose'
+import { Aggregate, model, PreMiddlewareFunction, Schema } from 'mongoose'
 import slugify from 'slugify'
 import { TTour } from '../types/tour.types'
 
@@ -132,59 +132,50 @@ TourSchema.virtual('priceToPound').get(function (this: TTour) {
     return this.price * 0.77
 })
 
-// Document middlewares: Runs bewfore .save() and .create(); NoT WHEN UPDATE!
-TourSchema.pre(
-    'save',
-    function (this: TTour & Query<any, any, any, any>, next) {
-        // Adding slug
-        this.slug = slugify(this.name, { lower: true })
+const documentMiddlewareAddSlug: PreMiddlewareFunction = function (this, next) {
+    // Adding slug
+    this.slug = slugify(this.name, { lower: true })
 
-        next()
-    }
-)
-
-TourSchema.post('save', function (this: TTour, doc, next) {
-    console.log('Document Saved.')
-    console.log(doc)
     next()
-})
+}
 
-// Query middlewares
-TourSchema.pre(
-    /^find/,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function (this: Query<any[], any, Record<string, any>, any>, next) {
-        this.find({ secretTour: { $ne: true } })
-
-        // Populate the ref fields
-        this.populate({
-            path: 'guides',
-        })
-
-        next()
-    }
-)
-
-TourSchema.post(
-    /^find/,
-    function (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this: Query<any[], any, Record<string, any>, any>,
-        docs: TTour[],
-        next
-    ) {
-        this.find({ secretTour: { $ne: true } })
-        next()
-    }
-)
-
-// Aggregate middlewares
-TourSchema.pre('aggregate', function (this: Aggregate<TTour>, next) {
+const aggregateMiddlewareSorting: PreMiddlewareFunction = function (
+    this: Aggregate<TTour>,
+    next
+) {
     this.pipeline().push({
         $sort: { numTours: -1 },
     })
     next()
+}
+
+// Document middlewares: Runs bewfore .save() and .create(); NoT WHEN UPDATE!
+TourSchema.pre('save', documentMiddlewareAddSlug)
+
+TourSchema.post('save', function (this: TTour, doc, next) {
+    console.log(doc)
+    next()
 })
+
+const queryMiddlewareExcludeSecretTours: PreMiddlewareFunction = function (
+    this,
+    next
+) {
+    this.find({ secretTour: { $ne: true } })
+
+    // Populate the ref fields
+    this.populate({
+        path: 'guides',
+    })
+
+    next()
+}
+
+// Query middlewares
+TourSchema.pre(/^find/, queryMiddlewareExcludeSecretTours)
+
+// Aggregate middlewares
+TourSchema.pre('aggregate', aggregateMiddlewareSorting)
 
 const TourModel = model('tours', TourSchema)
 

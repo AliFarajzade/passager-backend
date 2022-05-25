@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { model, Query, Schema } from 'mongoose'
-import { TReview } from '../types/review.types'
+import { model, PreMiddlewareFunction, Schema } from 'mongoose'
 const ReviewSchema = new Schema(
     {
         review: {
@@ -34,25 +33,25 @@ const ReviewSchema = new Schema(
     }
 )
 
+const queryMiddlewarePopulateFields: PreMiddlewareFunction = function (
+    this,
+    next
+) {
+    // For populating the ref fields.
+
+    this.populate({
+        path: 'user',
+        select: 'name photo',
+    }).populate({
+        path: 'tour',
+        select: 'name slug -guides',
+    })
+
+    next()
+}
+
 // Query middleware
-ReviewSchema.pre(
-    /^find/,
-    function (this: TReview & Query<any, any, any, any>, next) {
-        // For populating the ref fields.
-
-        this.populate({
-            path: 'user',
-            select: 'name photo',
-        }).populate({
-            path: 'tour',
-            select: 'name slug -guides',
-        })
-
-        next()
-    }
-)
-
-// 628b666b6e60221121e1b810
+ReviewSchema.pre(/^find/, queryMiddlewarePopulateFields)
 
 const ReviewModel = model('reviews', ReviewSchema)
 

@@ -1,5 +1,5 @@
 export type TUser = {
-    _id?: string
+    _id: string
     name: string
     email: string
     photo?: string
@@ -9,9 +9,6 @@ export type TUser = {
     role: 'user' | 'guide' | 'lead-guide' | 'admin'
     hashedResetPasswordToken?: string
     resetPasswordTokenExpireTime?: number
-    isModified?: (field: string) => boolean
-    isNew?: boolean
-    save: (options: Record<string, unknown>) => Promise<unknown>
 }
 
 export type TJWTDecodedType = { id: string; iat: number; exp: number }
