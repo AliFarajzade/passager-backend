@@ -9,4 +9,5 @@ router
     .get(reviewsController.getAllReviews)
     .post(protectRoute, restrictTo('user'), reviewsController.createNewReview)
 
+router.route('/:id').delete(reviewsController.deleteReview)
 export default router
