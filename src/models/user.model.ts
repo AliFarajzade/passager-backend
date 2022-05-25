@@ -147,6 +147,6 @@ UserSchema.methods.createPasswordResetToken = function (this: TUser) {
     return resetToken
 }
 
-const UserModel = model('users', UserSchema)
+const UserModel = model('User', UserSchema, 'users')
 
 export default UserModel

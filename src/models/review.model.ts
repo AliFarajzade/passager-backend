@@ -17,12 +17,12 @@ const ReviewSchema = new Schema(
         user: {
             type: Schema.Types.ObjectId,
             required: [true, 'A review must have an author.'],
-            ref: 'users',
+            ref: 'User',
         },
         tour: {
             type: Schema.Types.ObjectId,
             required: [true, 'A review must relate to a tour.'],
-            ref: 'tours',
+            ref: 'Tour',
         },
     },
     // Add createdAt and updatedAt fields.
@@ -53,6 +53,6 @@ const queryMiddlewarePopulateFields: PreMiddlewareFunction = function (
 // Query middleware
 ReviewSchema.pre(/^find/, queryMiddlewarePopulateFields)
 
-const ReviewModel = model('reviews', ReviewSchema)
+const ReviewModel = model('Review', ReviewSchema, 'reviews')
 
 export default ReviewModel

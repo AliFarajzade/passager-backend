@@ -118,7 +118,7 @@ const TourSchema = new Schema(
         ],
         guides: {
             type: [Schema.Types.ObjectId],
-            ref: 'users',
+            ref: 'User',
         },
     },
     {
@@ -177,6 +177,6 @@ TourSchema.pre(/^find/, queryMiddlewareExcludeSecretTours)
 // Aggregate middlewares
 TourSchema.pre('aggregate', aggregateMiddlewareSorting)
 
-const TourModel = model('tours', TourSchema)
+const TourModel = model('Tour', TourSchema, 'tours')
 
 export default TourModel
