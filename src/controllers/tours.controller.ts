@@ -32,6 +32,7 @@ export const getTourByID = catchAsync(
 
         const tourToFind = await TourModel.findById(id).populate({
             path: 'reviews',
+            options: { limit: '10', sort: '-createdAt' },
         })
 
         if (!tourToFind)
