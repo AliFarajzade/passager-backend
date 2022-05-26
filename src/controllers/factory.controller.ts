@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Model } from 'mongoose'
+import { Model, PopulateOptions } from 'mongoose'
 import AppError from '../utils/app-error.class'
 import { catchAsync } from './error.controller'
 
@@ -82,6 +82,37 @@ export const createDocument = (
             status: 'success',
             data: {
                 data: createdDocument,
+            },
+        })
+    })
+
+export const getDocument = (
+    Model: Model<
+        any,
+        Record<string, unknown>,
+        Record<string, unknown>,
+        Record<string, unknown>
+    >,
+    populateOptions:
+        | PopulateOptions
+        | (string | PopulateOptions)[]
+        | undefined = undefined
+) =>
+    catchAsync(async (req, res, next) => {
+        const { id } = req.params
+
+        let query = Model.findById(id)
+        if (populateOptions) query = query.populate(populateOptions)
+        const documentToFind = await query
+
+        if (!documentToFind)
+            return next(new AppError('No document found with this ID.', 404))
+
+        // Getting all tours from db
+        res.status(200).json({
+            status: 'success',
+            data: {
+                data: documentToFind,
             },
         })
     })
