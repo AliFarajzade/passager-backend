@@ -3,7 +3,7 @@ import { catchAsync } from '../controllers/error.controller'
 import TourModel from '../models/tour.model'
 import APIFeatures from '../utils/api-handler.class'
 import AppError from '../utils/app-error.class'
-import { deleteDocument } from './factory.controller'
+import { deleteDocument, updateDocument } from './factory.controller'
 
 // Get all tours
 export const getAllTours = catchAsync(
@@ -50,24 +50,7 @@ export const getTourByID = catchAsync(
 )
 
 // Update (patch) tour by ID
-export const patchTourByID = catchAsync(async (req, res, next) => {
-    const { id } = req.params
-
-    const updatedTour = await TourModel.findByIdAndUpdate(id, req.body, {
-        new: true,
-        runValidators: true,
-    })
-
-    if (!updatedTour)
-        return next(new AppError('No tour found with this ID.', 404))
-
-    res.status(200).json({
-        status: 'success',
-        data: {
-            tour: updatedTour,
-        },
-    })
-})
+export const patchTourByID = updateDocument(TourModel)
 
 // Delete tour by ID
 export const deleteTourByID = deleteDocument(TourModel)

@@ -22,6 +22,7 @@ router
 
 router
     .route('/:id')
+    .all(protectRoute, restrictTo('admin'))
     .get(toursController.getTourByID)
     .patch(toursController.patchTourByID)
     .delete(toursController.deleteTourByID)
