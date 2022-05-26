@@ -7,7 +7,12 @@ const router = Router({ mergeParams: true })
 router
     .route('/')
     .get(reviewsController.getAllReviews)
-    .post(protectRoute, restrictTo('user'), reviewsController.createNewReview)
+    .post(
+        protectRoute,
+        restrictTo('user'),
+        reviewsController.includeReviewFields,
+        reviewsController.createNewReview
+    )
 
 // TODO: Authorization with protectroute and ...
 router
