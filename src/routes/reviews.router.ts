@@ -18,7 +18,8 @@ router
 router
     .route('/:id')
     .all(protectRoute)
-    .delete(reviewsController.deleteReview)
-    .patch(reviewsController.updateReview)
+    .get(reviewsController.getTourById)
+    .delete(protectRoute, reviewsController.deleteReview)
+    .patch(protectRoute, reviewsController.updateReview)
 
 export default router
