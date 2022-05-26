@@ -2,10 +2,10 @@ import type { NextFunction, Request, Response } from 'express'
 import { catchAsync } from '../controllers/error.controller'
 import TourModel from '../models/tour.model'
 import APIFeatures from '../utils/api-handler.class'
-import AppError from '../utils/app-error.class'
 import {
     createDocument,
     deleteDocument,
+    getDocument,
     updateDocument,
 } from './factory.controller'
 
@@ -30,28 +30,10 @@ export const getAllTours = catchAsync(
 )
 
 // Get tour by ID
-export const getTourByID = catchAsync(
-    async (req: Request, res: Response, next: NextFunction) => {
-        // Get tours ID
-        const { id } = req.params
-
-        const tourToFind = await TourModel.findById(id).populate({
-            path: 'reviews',
-            options: { limit: '10', sort: '-createdAt' },
-        })
-
-        if (!tourToFind)
-            return next(new AppError('No tour found with this ID.', 404))
-
-        // Getting all tours from db
-        res.status(200).json({
-            status: 'success',
-            data: {
-                tour: tourToFind,
-            },
-        })
-    }
-)
+export const getTourByID = getDocument(TourModel, {
+    path: 'reviews',
+    options: { limit: '10', sort: '-createdAt' },
+})
 
 // Update (patch) tour by ID
 export const patchTourByID = updateDocument(TourModel)
