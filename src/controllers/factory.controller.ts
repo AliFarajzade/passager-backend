@@ -62,7 +62,26 @@ export const updateDocument = (
         res.status(200).json({
             status: 'success',
             data: {
-                tour: updatedDocument,
+                data: updatedDocument,
+            },
+        })
+    })
+
+export const createDocument = (
+    Model: Model<
+        any,
+        Record<string, unknown>,
+        Record<string, unknown>,
+        Record<string, unknown>
+    >
+) =>
+    catchAsync(async (req, res, _next) => {
+        const createdDocument = await Model.create(req.body)
+
+        res.status(201).json({
+            status: 'success',
+            data: {
+                data: createdDocument,
             },
         })
     })
