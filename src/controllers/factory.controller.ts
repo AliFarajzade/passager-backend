@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Model, PopulateOptions } from 'mongoose'
+import APIFeatures from '../utils/api-handler.class'
 import AppError from '../utils/app-error.class'
 import { catchAsync } from './error.controller'
 
@@ -113,6 +114,36 @@ export const getDocument = (
             status: 'success',
             data: {
                 data: documentToFind,
+            },
+        })
+    })
+
+export const getAllDocuments = (
+    Model: Model<
+        any,
+        Record<string, unknown>,
+        Record<string, unknown>,
+        Record<string, unknown>
+    >,
+    modelName = ''
+) =>
+    catchAsync(async (req, res, _next) => {
+        let queryFilter: Record<string, string | never> = {}
+
+        if (modelName === 'Review')
+            req.params.id && (queryFilter = { tour: req.params.id })
+
+        // Craete a query request
+        const features = new APIFeatures(Model.find(queryFilter), req.query)
+        features.filter().sort().fields().pagination()
+        const documents = await features.query
+
+        // Getting all tours from db
+        res.status(200).json({
+            status: 'success',
+            results: documents.length,
+            data: {
+                data: documents,
             },
         })
     })
