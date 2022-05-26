@@ -5,6 +5,7 @@ import { catchAsync } from './error.controller'
 import {
     createDocument,
     deleteDocument,
+    getDocument,
     updateDocument,
 } from './factory.controller'
 
@@ -43,3 +44,5 @@ export const createNewReview = createDocument(ReviewModel)
 export const deleteReview = deleteDocument(ReviewModel)
 
 export const updateReview = updateDocument(ReviewModel, 'Review')
+
+export const getTourById = getDocument(ReviewModel)
