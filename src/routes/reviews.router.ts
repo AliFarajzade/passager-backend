@@ -9,6 +9,7 @@ router
     .get(reviewsController.getAllReviews)
     .post(protectRoute, restrictTo('user'), reviewsController.createNewReview)
 
+// TODO: Authorization with protectroute and ...
 router
     .route('/:id')
     .all(protectRoute)

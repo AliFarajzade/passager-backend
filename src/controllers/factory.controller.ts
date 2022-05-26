@@ -46,8 +46,10 @@ export const updateDocument = (
     catchAsync(async (req, res, next) => {
         const { id } = req.params
 
-        if (modelName === 'Review')
+        if (modelName === 'Review') {
+            // TODO: Check if review belongs to user.
             req.body = excludeFields(req.body, 'user', 'tour')
+        }
 
         const updatedDocument = await Model.findByIdAndUpdate(id, req.body, {
             new: true,
