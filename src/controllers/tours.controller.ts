@@ -1,33 +1,16 @@
 import type { NextFunction, Request, Response } from 'express'
 import { catchAsync } from '../controllers/error.controller'
 import TourModel from '../models/tour.model'
-import APIFeatures from '../utils/api-handler.class'
 import {
     createDocument,
     deleteDocument,
+    getAllDocuments,
     getDocument,
     updateDocument,
 } from './factory.controller'
 
 // Get all tours
-export const getAllTours = catchAsync(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async (req: Request, res: Response, _: NextFunction) => {
-        // Craete a query request
-        const features = new APIFeatures(TourModel.find(), req.query)
-        features.filter().sort().fields().pagination()
-        const tours = await features.query
-
-        // Getting all tours from db
-        res.status(200).json({
-            status: 'success',
-            results: tours.length,
-            data: {
-                tours,
-            },
-        })
-    }
-)
+export const getAllTours = getAllDocuments(TourModel)
 
 // Get tour by ID
 export const getTourByID = getDocument(TourModel, {
