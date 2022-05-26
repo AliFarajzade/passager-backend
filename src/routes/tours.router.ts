@@ -22,10 +22,9 @@ router
 
 router
     .route('/:id')
-    .all(protectRoute, restrictTo('admin'))
     .get(toursController.getTourByID)
-    .patch(toursController.patchTourByID)
-    .delete(toursController.deleteTourByID)
+    .patch(protectRoute, restrictTo('admin'), toursController.patchTourByID)
+    .delete(protectRoute, restrictTo('admin'), toursController.deleteTourByID)
 
 router.use('/:id/reviews', reviewRouter)
 
