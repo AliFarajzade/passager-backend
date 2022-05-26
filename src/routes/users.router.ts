@@ -62,7 +62,10 @@ router
         usersContoller.getAllUsers
     )
 
-router.route('/:id').delete(usersContoller.deleteUser)
+router
+    .route('/:id')
+    .delete(usersContoller.deleteUser)
+    .get(usersContoller.getUserById)
 
 // prettier-ignore
 router
