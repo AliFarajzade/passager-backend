@@ -3,7 +3,11 @@ import { catchAsync } from '../controllers/error.controller'
 import TourModel from '../models/tour.model'
 import APIFeatures from '../utils/api-handler.class'
 import AppError from '../utils/app-error.class'
-import { deleteDocument, updateDocument } from './factory.controller'
+import {
+    createDocument,
+    deleteDocument,
+    updateDocument,
+} from './factory.controller'
 
 // Get all tours
 export const getAllTours = catchAsync(
@@ -55,16 +59,7 @@ export const patchTourByID = updateDocument(TourModel)
 // Delete tour by ID
 export const deleteTourByID = deleteDocument(TourModel)
 // Create new tour
-export const createNewTour = catchAsync(async (req, res, _next) => {
-    const createdTour = await TourModel.create(req.body)
-
-    res.status(201).json({
-        status: 'success',
-        data: {
-            tour: createdTour,
-        },
-    })
-})
+export const createNewTour = createDocument(TourModel)
 
 export const getTourStatsPipeline = catchAsync(async (_req, res, _next) => {
     const stats = await TourModel.aggregate([
