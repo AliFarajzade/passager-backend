@@ -1,6 +1,6 @@
 import UserModel from '../models/user.model'
 import { catchAsync } from './error.controller'
-import { deleteDocument } from './factory.controller'
+import { deleteDocument, getDocument } from './factory.controller'
 
 export const getAllUsers = catchAsync(async (_req, res, _next) => {
     const users = await UserModel.find()
@@ -13,5 +13,7 @@ export const getAllUsers = catchAsync(async (_req, res, _next) => {
         },
     })
 })
+
+export const getUserById = getDocument(UserModel)
 
 export const deleteUser = deleteDocument(UserModel)
