@@ -1,6 +1,12 @@
+import type { NextFunction, Request, Response } from 'express'
 import ReviewModel from '../models/review.model'
+import { TUser } from '../types/user.types'
 import { catchAsync } from './error.controller'
-import { deleteDocument, updateDocument } from './factory.controller'
+import {
+    createDocument,
+    deleteDocument,
+    updateDocument,
+} from './factory.controller'
 
 export const getAllReviews = catchAsync(async (req, res, _next) => {
     let filter: Record<string, string> = {}
@@ -22,23 +28,17 @@ export const getAllReviews = catchAsync(async (req, res, _next) => {
     })
 })
 
-export const createNewReview = catchAsync(async (req, res, _next) => {
+export const includeReviewFields = (
+    req: Request & Partial<{ currentUser: TUser }>,
+    _res: Response,
+    next: NextFunction
+) => {
     if (!req.body.tour) req.body.tour = req.params.id
+    req.body.user = req.currentUser?._id
+    next()
+}
 
-    // 1)  Create new tour in database.
-    const newReview = await ReviewModel.create({
-        ...req.body,
-        user: req.currentUser?._id,
-    })
-
-    // 2) Send the new review back to the clinet.
-    res.status(200).json({
-        status: 'success',
-        data: {
-            review: newReview,
-        },
-    })
-})
+export const createNewReview = createDocument(ReviewModel)
 
 export const deleteReview = deleteDocument(ReviewModel)
 
