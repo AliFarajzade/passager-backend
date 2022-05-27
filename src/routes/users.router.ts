@@ -74,8 +74,4 @@ router
     .delete(usersContoller.deleteUser)
     .get(usersContoller.getUserById)
 
-// prettier-ignore
-router
-    .route('/:id')
-
 export default router
