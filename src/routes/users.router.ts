@@ -5,13 +5,6 @@ import { customRateLimiter } from '../utils/limiter.helper'
 
 const router = Router()
 
-router.get(
-    '/me',
-    authControllers.protectRoute,
-    usersContoller.getMe,
-    usersContoller.getUserById
-)
-
 router.post(
     '/register',
     customRateLimiter(5, 60 * 30 * 1000, 'Try making new account later.'),
@@ -33,6 +26,11 @@ router.patch(
     customRateLimiter(5, 60 * 30 * 1000, 'Try again later.'),
     authControllers.resetPassword
 )
+
+router.use(authControllers.protectRoute)
+
+router.get('/me', usersContoller.getMe, usersContoller.getUserById)
+
 router.patch(
     '/change-password',
     customRateLimiter(
@@ -40,7 +38,7 @@ router.patch(
         60 * 30 * 1000,
         'Try changing your password in an hour.'
     ),
-    authControllers.protectRoute,
+
     authControllers.updatePassword
 )
 
@@ -51,23 +49,15 @@ router.patch(
         60 * 30 * 1000,
         'Try updating your profile in an hour.'
     ),
-    authControllers.protectRoute,
+
     authControllers.updateProfile
 )
 
-router.delete(
-    '/delete-me',
-    authControllers.protectRoute,
-    authControllers.deleteMe
-)
+router.delete('/delete-me', authControllers.deleteMe)
 
-router
-    .route('/')
-    .get(
-        authControllers.protectRoute,
-        authControllers.restrictTo('admin', 'lead-guide'),
-        usersContoller.getAllUsers
-    )
+router.use(authControllers.restrictTo('admin'))
+
+router.route('/').get(usersContoller.getAllUsers)
 
 router
     .route('/:id')

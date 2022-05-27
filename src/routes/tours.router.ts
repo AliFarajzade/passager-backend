@@ -5,6 +5,12 @@ import reviewRouter from './reviews.router'
 
 const router = Router()
 
+router.route('/get-stats').get(toursController.getTourStatsPipeline)
+
+router
+    .route('/top-5-cheap')
+    .get(toursController.aliesTopTours, toursController.getAllTours)
+
 router
     .route('/')
     .get(toursController.getAllTours)
@@ -13,12 +19,6 @@ router
         restrictTo('admin', 'lead-guide'),
         toursController.createNewTour
     )
-
-router.route('/get-stats').get(toursController.getTourStatsPipeline)
-
-router
-    .route('/top-5-cheap')
-    .get(toursController.aliesTopTours, toursController.getAllTours)
 
 router
     .route('/:id')
