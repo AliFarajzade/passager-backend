@@ -5,6 +5,13 @@ import { customRateLimiter } from '../utils/limiter.helper'
 
 const router = Router()
 
+router.get(
+    '/me',
+    authControllers.protectRoute,
+    usersContoller.getMe,
+    usersContoller.getUserById
+)
+
 router.post(
     '/register',
     customRateLimiter(5, 60 * 30 * 1000, 'Try making new account later.'),
