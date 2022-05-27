@@ -6,7 +6,7 @@ import {
     deleteDocument,
     getAllDocuments,
     getDocument,
-    updateDocument,
+    updateDocument
 } from './factory.controller'
 
 export const getAllReviews = getAllDocuments(ReviewModel, 'Review')
@@ -27,4 +27,4 @@ export const deleteReview = deleteDocument(ReviewModel)
 
 export const updateReview = updateDocument(ReviewModel, 'Review')
 
-export const getTourById = getDocument(ReviewModel)
+export const getReviewById = getDocument(ReviewModel)
