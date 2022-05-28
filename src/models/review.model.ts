@@ -40,6 +40,9 @@ const ReviewSchema = new Schema(
     }
 )
 
+// Preventing from duplicate review
+// ReviewSchema.index({ user: 1, tour: 1 }, { unique: true })
+
 const queryMiddlewarePopulateFields: PreMiddlewareFunction = function (
     this,
     next
