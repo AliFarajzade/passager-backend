@@ -129,6 +129,7 @@ const TourSchema = new Schema(
 )
 
 // TourSchema.index({ price: 1, averageRating: -1 })
+TourSchema.index({ startLocation: '2dsphere' })
 
 // Virtual populate
 TourSchema.virtual('reviews', {
