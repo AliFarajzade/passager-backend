@@ -5,6 +5,10 @@ import reviewRouter from './reviews.router'
 
 const router = Router()
 
+router
+    .route('/tours-within/:distance/center/:latlng/unit/:unit')
+    .get(toursController.getToursWithin)
+
 router.route('/get-stats').get(toursController.getTourStatsPipeline)
 
 router
