@@ -25,6 +25,7 @@ const TourSchema = new Schema(
             default: 0,
             min: [0.1, 'A Tour rating must be more or equal than 0.1.'],
             max: [5.0, 'A Tour rating must be less or equal than 5.0.'],
+            set: (value: number) => Math.ceil(value * 100) / 10,
         },
         price: {
             type: Number,
