@@ -1,12 +1,13 @@
 import type { NextFunction, Request, Response } from 'express'
 import { catchAsync } from '../controllers/error.controller'
 import TourModel from '../models/tour.model'
+import AppError from '../utils/app-error.class'
 import {
     createDocument,
     deleteDocument,
     getAllDocuments,
     getDocument,
-    updateDocument,
+    updateDocument
 } from './factory.controller'
 
 // Get all tours
@@ -62,3 +63,31 @@ export const aliesTopTours = async (
         console.log(error)
     }
 }
+
+export const getToursWithin = catchAsync(async (req, res, next) => {
+    const { distance, latlng, unit } = req.params
+
+    const [lat, lng] = JSON.parse(latlng)
+    if (!lat || !lng || !distance || !unit)
+        return next(
+            new AppError(
+                'Please provide a latitude, longitude, unit and distance.',
+                400
+            )
+        )
+
+    const radian =
+        unit === 'km' ? parseInt(distance) / 6371 : parseInt(distance) / 3958
+
+    const tours = await TourModel.find({
+        startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radian] } },
+    })
+
+    res.status(200).json({
+        status: 'success',
+        results: tours.length,
+        data: {
+            data: tours,
+        },
+    })
+})
