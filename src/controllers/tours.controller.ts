@@ -7,7 +7,7 @@ import {
     deleteDocument,
     getAllDocuments,
     getDocument,
-    updateDocument
+    updateDocument,
 } from './factory.controller'
 
 // Get all tours
@@ -86,6 +86,45 @@ export const getToursWithin = catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         results: tours.length,
+        data: {
+            data: tours,
+        },
+    })
+})
+
+export const getDistances = catchAsync(async (req, res, next) => {
+    const { latlng, unit } = req.params
+
+    const [lat, lng] = JSON.parse(latlng) as [number, number]
+
+    if (!lat || !lng || !unit)
+        return next(
+            new AppError('Please provide a latitude, longitude and unit.', 400)
+        )
+
+    const multiplier = unit === 'km' ? 0.001 : 0.000621371
+
+    const tours = await TourModel.aggregate([
+        {
+            $geoNear: {
+                near: {
+                    type: 'Point',
+                    coordinates: [lng, lat],
+                },
+                distanceField: 'distance',
+                distanceMultiplier: multiplier,
+            },
+        },
+        {
+            $project: {
+                distance: 1,
+                name: 1,
+            },
+        },
+    ])
+
+    res.status(200).json({
+        status: 'success',
         data: {
             data: tours,
         },
