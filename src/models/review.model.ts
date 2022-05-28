@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { model, PreMiddlewareFunction, Schema } from 'mongoose'
+import {
+    Model,
+    model,
+    PostMiddlewareFunction,
+    PreMiddlewareFunction,
+    Schema,
+} from 'mongoose'
+import TourModel from './tour.model'
 const ReviewSchema = new Schema(
     {
         review: {
@@ -47,8 +54,44 @@ const queryMiddlewarePopulateFields: PreMiddlewareFunction = function (
     next()
 }
 
+ReviewSchema.statics.calculateAverageRatingAndQuantity = async function (
+    this: Model<typeof ReviewSchema>,
+    tourId: string
+) {
+    const stats = await this.aggregate([
+        {
+            $match: { tour: tourId },
+        },
+        {
+            $group: {
+                _id: '$tour',
+                nRating: { $sum: 1 },
+                avgRating: { $avg: '$rating' },
+            },
+        },
+    ])
+
+    console.log(stats)
+
+    await TourModel.findByIdAndUpdate(tourId, {
+        ratingsQuantity: stats[0].nRating,
+        averageRating: stats[0].avgRating,
+    })
+}
+
+const replaceAverageRatingAndQuantity: PostMiddlewareFunction = function (
+    this,
+    res,
+    next
+) {
+    this.constructor.calculateAverageRatingAndQuantity(res.tour)
+    next()
+}
+
 // Query middleware
 ReviewSchema.pre(/^find/, queryMiddlewarePopulateFields)
+
+ReviewSchema.post('save', replaceAverageRatingAndQuantity)
 
 const ReviewModel = model('Review', ReviewSchema, 'reviews')
 
