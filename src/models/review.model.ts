@@ -74,12 +74,12 @@ ReviewSchema.statics.calculateAverageRatingAndQuantity = async function (
     console.log(stats)
 
     await TourModel.findByIdAndUpdate(tourId, {
-        ratingsQuantity: stats[0].nRating,
-        averageRating: stats[0].avgRating,
+        ratingsQuantity: stats.length === 0 ? 0 : stats[0].nRating,
+        averageRating: stats.length === 0 ? 0 : stats[0].avgRating,
     })
 }
 
-const replaceAverageRatingAndQuantity: PostMiddlewareFunction = function (
+const replaceAverageRatingAndQuantityOnSave: PostMiddlewareFunction = function (
     this,
     res,
     next
@@ -88,10 +88,18 @@ const replaceAverageRatingAndQuantity: PostMiddlewareFunction = function (
     next()
 }
 
+const replaceAverageRatingAndQuantityOnUpdatePost: PostMiddlewareFunction =
+    async function (this, res, next) {
+        this.model.calculateAverageRatingAndQuantity(res.tour)
+
+        next()
+    }
+
 // Query middleware
 ReviewSchema.pre(/^find/, queryMiddlewarePopulateFields)
 
-ReviewSchema.post('save', replaceAverageRatingAndQuantity)
+ReviewSchema.post('save', replaceAverageRatingAndQuantityOnSave)
+ReviewSchema.post(/^findOneAnd/, replaceAverageRatingAndQuantityOnUpdatePost)
 
 const ReviewModel = model('Review', ReviewSchema, 'reviews')
 
