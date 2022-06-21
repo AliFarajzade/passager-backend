@@ -83,10 +83,6 @@ const TourSchema = new Schema(
             default: false,
         },
         startDates: [Date],
-        createdAt: {
-            type: Date,
-            default: Date.now(),
-        },
         startLocation: {
             // GeoJSON
             type: {
@@ -125,6 +121,7 @@ const TourSchema = new Schema(
     {
         toJSON: { virtuals: true },
         toObject: { virtuals: true },
+        timestamps: true,
     }
 )
 
