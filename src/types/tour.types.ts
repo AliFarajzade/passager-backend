@@ -15,4 +15,5 @@ export type TTour = {
     coverImage: string
     createdAt: Date
     startDates: Date[]
+    discounetedPrice?: number
 }
