@@ -66,6 +66,7 @@ const UserSchema = new Schema({
         },
         default: 'user',
     },
+    description: String,
     hashedResetPasswordToken: String,
     resetPasswordTokenExpireTime: Date,
     active: {
