@@ -62,9 +62,7 @@ export const updateDocument = (
 
         res.status(200).json({
             status: 'success',
-            data: {
-                data: updatedDocument,
-            },
+            data: updatedDocument,
         })
     })
 
@@ -81,9 +79,7 @@ export const createDocument = (
 
         res.status(201).json({
             status: 'success',
-            data: {
-                data: createdDocument,
-            },
+            data: createdDocument,
         })
     })
 
@@ -112,9 +108,7 @@ export const getDocument = (
         // Getting all tours from db
         res.status(200).json({
             status: 'success',
-            data: {
-                data: documentToFind,
-            },
+            data: documentToFind,
         })
     })
 
@@ -142,8 +136,6 @@ export const getAllDocuments = (
         res.status(200).json({
             status: 'success',
             results: documents.length,
-            data: {
-                data: documents,
-            },
+            data: documents,
         })
     })
