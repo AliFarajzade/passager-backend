@@ -5,6 +5,8 @@ import reviewRouter from './reviews.router'
 
 const router = Router()
 
+router.route('/get-by-slug/:slug').get(toursController.getTourBySlug)
+
 router
     .route('/tours-within/:distance/center/:latlng/unit/:unit')
     .get(toursController.getToursWithin)
