@@ -130,3 +130,14 @@ export const getDistances = catchAsync(async (req, res, next) => {
         },
     })
 })
+
+export const getTourBySlug = catchAsync(async (req, res, next) => {
+    const { slug } = req.params
+
+    const tourToFind = await TourModel.findOne({ slug }).populate('guides')
+
+    res.status(200).json({
+        status: 'success',
+        data: tourToFind,
+    })
+})
