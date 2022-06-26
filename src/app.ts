@@ -1,3 +1,4 @@
+import cors from 'cors'
 import express, { NextFunction, Request, Response } from 'express'
 import mongoSanitize from 'express-mongo-sanitize'
 import helmet from 'helmet'
@@ -41,6 +42,8 @@ app.use(
         ],
     })
 )
+
+app.use(cors())
 
 // Routers middlewares
 app.use('/api/v1/tours', toursRouter)
