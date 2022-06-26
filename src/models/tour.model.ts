@@ -82,7 +82,7 @@ const TourSchema = new Schema(
             type: Boolean,
             default: false,
         },
-        startDates: [Date],
+        startDate: Date,
         startLocation: {
             // GeoJSON
             type: {
