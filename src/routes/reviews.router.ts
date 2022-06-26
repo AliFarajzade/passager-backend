@@ -4,15 +4,11 @@ import * as reviewsController from '../controllers/reviews.controller'
 
 const router = Router({ mergeParams: true })
 
-router.use(protectRoute)
-
 router
     .route('/')
-    .get(
-        restrictTo('admin', 'lead-guide', 'guide'),
-        reviewsController.getAllReviews
-    )
+    .get(reviewsController.getAllReviews)
     .post(
+        protectRoute,
         restrictTo('user'),
         reviewsController.includeReviewFields,
         reviewsController.createNewReview
@@ -22,7 +18,15 @@ router
 router
     .route('/:id')
     .get(reviewsController.getReviewById)
-    .delete(restrictTo('user', 'admin'), reviewsController.deleteReview)
-    .patch(restrictTo('user', 'admin'), reviewsController.updateReview)
+    .delete(
+        protectRoute,
+        restrictTo('user', 'admin'),
+        reviewsController.deleteReview
+    )
+    .patch(
+        protectRoute,
+        restrictTo('user', 'admin'),
+        reviewsController.updateReview
+    )
 
 export default router
