@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express, { NextFunction, Request, Response } from 'express'
 import mongoSanitize from 'express-mongo-sanitize'
@@ -42,6 +43,8 @@ app.use(
         ],
     })
 )
+
+app.use(cookieParser())
 
 app.use(cors())
 
