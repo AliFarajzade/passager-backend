@@ -20,6 +20,10 @@ const TourSchema = new Schema(
             ],
         },
         slug: String,
+        city: {
+            type: String,
+            required: [true, 'A Tour must have a city.'],
+        },
         averageRating: {
             type: Number,
             default: 0,
