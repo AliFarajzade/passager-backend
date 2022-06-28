@@ -131,8 +131,14 @@ export const getAllDocuments = (
         const features = new APIFeatures(Model.find(queryFilter), req.query)
         features.filter().sort().fields()
         const total = await features.query.countDocuments()
+
         features.filter().sort().fields().pagination()
-        const documents = await features.query.clone()
+
+        let documents
+
+        if (modelName === 'Review')
+            documents = await features.query.populate('user').clone()
+        else documents = await features.query.clone()
 
         // Getting all tours from db
         res.status(200).json({
