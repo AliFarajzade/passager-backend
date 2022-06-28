@@ -90,19 +90,22 @@ export const logInUser = catchAsync(async (req, res, next) => {
 })
 
 export const protectRoute = catchAsync(async (req, _res, next) => {
-    let token = ''
+    let token: string | undefined = undefined
+
+    console.log(req.cookies)
 
     // 1) Check for JWT existence
     if (
-        !req.headers.authorization ||
-        !req.headers.authorization.startsWith('Bearer') ||
-        !req.headers.authorization.split(' ')[1]
+        req.headers.authorization &&
+        req.headers.authorization.startsWith('Bearer')
     )
+        token = req.headers.authorization.split(' ')[1]
+    else if (req.cookies.jwt) token = req.cookies?.jwt
+
+    if (!token)
         return next(
             new AppError('You are unauthorized! Please log in first', 401)
         )
-
-    token = req.headers.authorization.split(' ')[1]
 
     // 2) Check for JWT validation
     const { id, iat } = jwt.verify(
