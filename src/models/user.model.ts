@@ -56,11 +56,7 @@ const UserSchema = new Schema({
         type: Date,
         required: false,
     },
-    photo: {
-        type: String,
-        default:
-            'https://res.cloudinary.com/theali1/image/upload/v1656502757/passager/avatar_icnkjz.png',
-    },
+    photo: String,
     role: {
         type: String,
         enum: {
