@@ -1,6 +1,6 @@
 /* eslint-disable */
-import type { ParsedQs } from 'qs'
 import { Query } from 'mongoose'
+import type { ParsedQs } from 'qs'
 
 export default class APIFeatures {
     constructor(
