@@ -44,9 +44,7 @@ const sendToken = (
         res.status(201).json({
             status: 'success',
             token,
-            data: {
-                user,
-            },
+            data: user,
         })
     } else
         res.status(201).json({
