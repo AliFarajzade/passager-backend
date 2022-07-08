@@ -13,7 +13,7 @@ high performance Tourism API Server built with NodeJs and MongoDB.
 
 ## Technologies that was used to build this app:
 
-<div style='display: flex; gap: 5px; flex-wrap: wrap;'>
+
 <img align="left" title='TypeScript' alt="TypeScript" width="35px" src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" />
 <img align="left" title='Node' alt="Node" width="45px" style='transform: translateY(5px);' src="https://nodejs.org/static/images/logos/nodejs-new-pantone-white.svg" />
 <img align="left" title='Express' alt="Express" width="111px" src="https://www.geekandjob.com/uploads/wiki/2e5b0058b2d38158b21439fe06e9b8fabe3cb139.png" />
@@ -22,7 +22,7 @@ high performance Tourism API Server built with NodeJs and MongoDB.
 <img align="left" title='Git' alt="Git" width="35px" src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Git_icon.svg" />
 <img align="left" title='Terminal' alt="Terminal" width="35px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/High-contrast-utilities-terminal.svg/1024px-High-contrast-utilities-terminal.svg.png" />
 <img align="left" title='Github' alt="Github" width="35px" src="https://github.githubassets.com/images/modules/logos_page/Octocat.png" />
-</div>
+
 
 <br >
 <br >
