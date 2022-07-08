@@ -4,10 +4,11 @@
     "source": "src/server.ts",
     "main": "dist/main.js",
     "scripts": {
+        "start": "node ./dist/main.js",
         "lint": "eslint src/**/*.ts",
         "compile": "tsc -w",
         "server": "nodemon ./dev/server.js",
-        "build": "parcel build"
+        "build": "parcel build --no-source-maps"
     },
     "keywords": [],
     "author": "Ali Farajzade",
