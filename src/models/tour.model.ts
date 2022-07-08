@@ -165,7 +165,6 @@ const aggregateMiddlewareSorting: PreMiddlewareFunction = function (
 TourSchema.pre('save', documentMiddlewareAddSlug)
 
 TourSchema.post('save', function (this: TTour, doc, next) {
-    console.log(doc)
     next()
 })
 

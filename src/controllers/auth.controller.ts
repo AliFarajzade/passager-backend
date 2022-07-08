@@ -90,8 +90,6 @@ export const logInUser = catchAsync(async (req, res, next) => {
 export const protectRoute = catchAsync(async (req, _res, next) => {
     let token: string | undefined = undefined
 
-    console.log(req.cookies)
-
     // 1) Check for JWT existence
     if (
         req.headers.authorization &&

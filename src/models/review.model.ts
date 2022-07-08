@@ -74,8 +74,6 @@ ReviewSchema.statics.calculateAverageRatingAndQuantity = async function (
         },
     ])
 
-    console.log(stats)
-
     await TourModel.findByIdAndUpdate(tourId, {
         ratingsQuantity: stats.length === 0 ? 0 : stats[0].nRating,
         averageRating: stats.length === 0 ? 0 : stats[0].avgRating,
