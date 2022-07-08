@@ -6,7 +6,7 @@
 
 :star: Star me on GitHub — it motivates me a lot!
 
-> Here is the back-end repository: [Click here](https://github.com/AliFarajzade/passager-backend)
+> Here is the front-end repository: [Click here](https://github.com/AliFarajzade/passager-frontend)
 
 [Passager Back-End](https://passager.herokuapp.com/api/v1) is THE professional, full-featured and
 high performance Tourism API Server built with NodeJs and MongoDB.
