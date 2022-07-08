@@ -7,12 +7,12 @@ const router = Router()
 
 router.post(
     '/register',
-    customRateLimiter(5, 60 * 30 * 1000, 'Try making new account later.'),
+    customRateLimiter(10, 60 * 30 * 1000, 'Try making new account later.'),
     authControllers.signUpUser
 )
 router.post(
     '/enter',
-    customRateLimiter(7, 60 * 30 * 1000, 'Try loging in later.'),
+    customRateLimiter(14, 60 * 30 * 1000, 'Try loging in later.'),
     authControllers.logInUser
 )
 
