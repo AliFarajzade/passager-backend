@@ -2,11 +2,11 @@
     <img src="https://raw.githubusercontent.com/AliFarajzade/passager-frontend/master/public/images/logo-gradient.png" alt="Node" title="Node" align="right" height="60" />
 </a>
 
-> Here is the back-end repository: [Click here](https://github.com/AliFarajzade/passager-backend)
-
 # Passager Back-End, A TypeScript, MongoDB API Server built with NodeJs!
 
 :star: Star me on GitHub — it motivates me a lot!
+
+> Here is the back-end repository: [Click here](https://github.com/AliFarajzade/passager-backend)
 
 [Passager Back-End](https://passager.herokuapp.com/api/v1) is THE professional, full-featured and
 high performance Tourism API Server built with NodeJs and MongoDB.
